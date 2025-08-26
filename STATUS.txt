@@ -1,0 +1,13 @@
+Tue 26 Aug 18:01:43 UTC 2025
+
+Did a quick check from a fresh clone off the github repo.
+
+Seems fine locally.  Builds and runs as expected.
+
+There's plenty yet to do, but basic Forth functionality
+is now present in the program.
+
+The data directory holds additional resources that are
+not yet functional here in the present environment.
+
+end.
