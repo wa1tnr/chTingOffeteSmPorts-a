@@ -1,0 +1,1 @@
+2cf0484a0be4e207009050f16be5189750454e24  2174-esp32Forth_54_SerialMonitor.zip
