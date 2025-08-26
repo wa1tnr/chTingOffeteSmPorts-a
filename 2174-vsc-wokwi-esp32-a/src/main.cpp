@@ -68,7 +68,9 @@ void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax = 255) {
 }
 
 // #include <WiFi.h>
-#include "SPIFFS.h"
+// #include "SPIFFS.h"
+#include <LittleFS.h>
+#define myFS LittleFS
 
 const char *ssid = "TING";          // type your ssid
 const char *pass = "youarewelcome"; // type your password
@@ -574,6 +576,7 @@ void setup() {
   // Setup timer and attach timer to a led pin
   // ledcSetup(0, 100, LEDC_TIMER_13_BIT);
   // ledcAttachPin(5, 0);
+
   ledcAnalogWrite(0, 250, brightness);
   pinMode(2, OUTPUT);
   digitalWrite(2, HIGH); // turn the LED2 on
@@ -586,11 +589,22 @@ void setup() {
   pinMode(19, OUTPUT);
   digitalWrite(19, LOW); // motor2 bacward
 
-  if (!SPIFFS.begin(true)) {
-    Serial.println("Error mounting SPIFFS");
+
+
+  Serial.println("\r\nLittleFS: begin ... ");
+
+//	myFS.begin();
+//	zType("done.");
+//	zType("\r\nLittleFS: initialized\r\n");
+
+  if (!myFS.begin(true)) {
+  // if (!SPIFFS.begin(true)) {
+    // Serial.println("Error mounting SPIFFS");
+    Serial.println("Error mounting LittleFS");
   }
 
-  File file = SPIFFS.open("/load.txt");
+  // File file = SPIFFS.open("/load.txt");
+  File file = myFS.open("/load.txt");
 
   if (file) {
     Serial.print("Load file: ");
@@ -605,7 +619,8 @@ void setup() {
     evaluate();
     Serial.println(" Done loading.");
     file.close();
-    SPIFFS.end();
+    // SPIFFS.end();
+    myFS.end();
   }
 }
 
