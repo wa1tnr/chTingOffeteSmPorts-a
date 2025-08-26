@@ -1,0 +1,140 @@
+# Mon 25 Aug 12:10:25 UTC 2025
+# attempt to fix merbi target
+
+# Thu 20 Mar 15:04:39 UTC 2025
+# was: Sun 16 Mar 22:16:28 UTC 2025
+# thisfile: tld_project/exact/path/_Makefile_frozen
+
+all: distclean clean spiffs xall merbi _obtw in_success _out
+
+run:
+	@code -r diagram.json
+
+build:	_testBuildMsg	_out
+	@pio run
+
+_obtw:
+	@echo
+	@echo    -e '  ' '\e[0;1;33mobtw\e[0;36m .. this is what success looks like:'
+
+# august 2025 reports wrong version of esptool.py - not the one in use
+
+in_success:	_escBkt _green
+	@echo '    ' esptool.py v4.5.1
+	@echo '    ' Wrote 0x3f0000 bytes to file merged-flash.bin, ready to flash to offset 0x0
+	@echo
+
+nomergeall: distclean clean spiffs xall
+
+xall:
+	pio -f -c vim run
+
+# esptool.py in the path
+# `PATH="/some/path/to/.platformio/packages/tool-esptoolpy@1.40501.0:$PATH"`
+
+# preserve old working version:
+xmerbi:
+	@esptool.py \
+	--chip ESP32 merge_bin \
+	-o merged-flash.bin --flash_mode dio --flash_size 4MB \
+	0x1000 .pio/build/esp32doit-devkit-v1/bootloader.bin \
+	0x8000 .pio/build/esp32doit-devkit-v1/partitions.bin \
+	0x10000 .pio/build/esp32doit-devkit-v1/firmware.bin \
+	0x3C0000 .pio/build/esp32doit-devkit-v1/spiffs.bin
+
+# repair 25 aug 2025:
+
+
+# Warning: Deprecated: Option '--flash_size' is deprecated. Use '--flash-size' instead.
+# Warning: Deprecated: Command 'merge_bin' is deprecated. Use 'merge-bin' instead.
+
+merbi:
+	@esptool.py \
+	--chip ESP32 merge-bin \
+	-o merged-flash.bin --flash-mode dio --flash-size 4MB \
+	0x1000 .pio/build/esp32doit-devkit-v1/bootloader.bin \
+	0x8000 .pio/build/esp32doit-devkit-v1/partitions.bin \
+	0x10000 .pio/build/esp32doit-devkit-v1/firmware.bin \
+	0x3C0000 .pio/build/esp32doit-devkit-v1/littlefs.bin
+
+# Name,   Type, SubType,    Offset,     Size, Flags
+# nvs,      data, nvs,        0x9000,   0x5000,
+# otadata,  data, ota,        0xe000,   0x2000,
+# app0,     app,  ota_0,     0x10000, 0x1E0000,
+# app1,     app,  ota_1,    0x1F0000, 0x1D0000,
+# spiffs,   data, spiffs,   0x3C0000,  0x30000,
+# coredump, data, coredump, 0x3F0000,  0x10000,
+
+# hex 9000 5000 + . \ 0xE000 expected
+# hex E000 2000 + . \ 0x10000 expected
+# hex 10000 1E0000 + . \ 0x1F0000 expected
+# hex 1F0000 1D0000 + . \ 0x3C0000 expected
+# hex 3C0000  30000 + . \ 0x3F0000 expected
+# hex 3F0000 10000 + . \ 0x400000 expected
+
+_dothingespt:
+	pio pkg install --global --tool "platformio/tool-esptoolpy@^1.40801.0"
+
+erase:
+	pio run -t erase
+
+spiffs:
+	pio run -v -t buildfs
+
+# 'make upload' is not used on wokwi iirc:
+
+upload:
+	pio run -t upload
+
+clean:
+	pio run -t clean
+
+distclean: clean
+	rm -rf ./.pio
+	rm -rf ./merged-flash.bin
+
+
+# find all tabs and remove them in the status, to help form .gitignore entries
+git_status:
+	@git status | cat | tr -d '\t'
+
+pwd:
+	@echo -n '  ..'
+	@pwd | cut -b 27-
+
+# -- messages
+
+_testBuildMsg:
+	@echo
+	@echo -ne '\e['
+	@echo -ne '0;34;40m'
+	@echo -n '['
+	@echo -ne '\e['
+	@echo -ne '0;33;40m'
+	@echo -ne 'pio run'
+	@echo -ne '\e['
+	@echo -ne '0;34;40m'
+	@echo -n ']'
+	@echo -n ' '
+
+# -- ansi color
+
+_escBkt:
+	@echo -ne '\e['
+
+_out:
+	@echo -ne '\e[1;0m'
+
+_blue:
+	@echo -ne '0;34;40m'
+
+_yellow:
+	@echo -ne '0;33;40m'
+
+_green:
+	@echo -ne '0;32;40m'
+
+_brtYellow:
+	@echo -ne '0;1;33;40m'
+
+# end.
