@@ -1,0 +1,26 @@
+( example )
+
+( decimal ) ( default: hex )
+
+variable OLDBASE
+base @
+OLDBASE !
+
+: _genten ( -- 10_decimal )
+  1 dup + dup dup + dup + +
+;
+
+: _plusss 2B ; ( -- 0x2b )
+
+: _pluss ( -- 43_decimal )
+  _genten dup + dup + 1 + 1 + 1 +
+;
+
+: fonextia  dup 2 < IF drop ." ERROR" CR exit then 2 max 1 - for _pluss emit next ;
+
+\ Says if less than 2 reject the input and notify the OP but continue program,
+\ as this program consumes TOS and ouputs a series of + chars
+\ so there is no real error to worry about in most applications.
+
+( Tue 26 Aug 23:40:55 UTC 2025)
+( end. )

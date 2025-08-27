@@ -1,0 +1,9 @@
+
+
+ : fonextia  dup 2 < IF drop ." ERROR" CR exit then 2 max 1 - for 43 emit next ;
+
+\ Says if less than 2 reject the input and notify the OP but continue program,
+\ as this program consumes TOS and ouputs a series of + chars
+\ so there is no real error to worry about in most applications.
+
+ 
