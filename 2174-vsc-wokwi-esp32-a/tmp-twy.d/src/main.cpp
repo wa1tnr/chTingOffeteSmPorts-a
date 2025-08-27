@@ -38,6 +38,8 @@
 /* All multiply-divide words cleaned up                                       */
 /******************************************************************************/
 
+#include <Arduino.h>
+
 #include "SPIFFS.h"
 #include <WiFi.h>
 #include <WebServer.h>
