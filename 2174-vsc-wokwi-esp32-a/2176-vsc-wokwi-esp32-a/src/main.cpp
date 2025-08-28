@@ -1507,8 +1507,12 @@ void setup()
   IP=0;
   for (len=0;len<0x120;len++){CheckSum();}
 // compile \data\load.txt 
-  if(!SPIFFS.begin(true)){Serial.println("Error mounting SPIFFS"); }
-  File file = SPIFFS.open("/load.txt");
+// if(!SPIFFS.begin(true)){Serial.println("Error mounting SPIFFS"); }
+  if (!myFS.begin(true)){Serial.println("Error mounting LittleFS"); }
+
+  // File file = SPIFFS.open("/load.txt");
+  File file = myFS.open("/load.txt");
+
   if(file) {
     Serial.print("Load file: ");
     len = file.read(cData+0x8000,0x7000);
@@ -1522,7 +1526,8 @@ void setup()
     evaluate();
     Serial.println(" Done loading.");
     file.close();
-    SPIFFS.end();
+    // SPIFFS.end();
+    myFS.end();
   }
 }
 
