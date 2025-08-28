@@ -309,6 +309,101 @@ void THEN(int len, ...) {
   va_end(argList);
 }
 
+void FOR(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" FOR ");
+  data[P++] = TOR;
+  pushR = P;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+void NEXT(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" NEXT ");
+  data[P++] = DONXT;
+  data[P++] = popR << 2;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+void AFT(int len, ...) {
+  P = IP >> 2;
+  int k;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" AFT ");
+  data[P++] = BRAN;
+  data[P++] = 0;
+  k = popR;
+  pushR = P;
+  pushR = P - 1;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+void DOTQ(char seq[]) {
+  P = IP >> 2;
+  int i;
+  int len = strlen(seq);
+  data[P++] = DOTQP;
+  IP = P << 2;
+  cData[IP++] = len;
+  for (i = 0; i < len; i++) {
+    cData[IP++] = seq[i];
+  }
+  while (IP & 3) {
+    cData[IP++] = 0;
+  }
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" ");
+  Serial.print(seq);
+}
+void STRQ(char seq[]) {
+  P = IP >> 2;
+  int i;
+  int len = strlen(seq);
+  data[P++] = STRQP;
+  IP = P << 2;
+  cData[IP++] = len;
+  for (i = 0; i < len; i++) {
+    cData[IP++] = seq[i];
+  }
+  while (IP & 3) {
+    cData[IP++] = 0;
+  }
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" ");
+  Serial.print(seq);
+}
+
 // ###bookmark
 // clang-format off
 
@@ -316,96 +411,6 @@ void THEN(int len, ...) {
 
 
 
-
-
-void FOR(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" FOR ");
-  data[P++]=TOR;
-  pushR=P;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void NEXT(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" NEXT ");
-  data[P++]=DONXT;
-  data[P++]=popR<<2;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void AFT(int len, ... ) {
-  P=IP>>2;
-  int k;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" AFT ");
-  data[P++]=BRAN;
-  data[P++]=0;
-  k=popR;
-  pushR=P;
-  pushR=P-1;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void DOTQ(char seq[]) {
-  P=IP>>2;
-  int i;
-  int len=strlen(seq);
-  data[P++]=DOTQP;
-  IP=P<<2;
-  cData[IP++]=len;
-  for (i=0;i<len;i++)
-     {cData[IP++]=seq[i];}
-  while (IP&3) {cData[IP++]=0;}
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" ");
-  Serial.print(seq);
-}
-void STRQ(char seq[]) {
-  P=IP>>2;
-  int i;
-  int len=strlen(seq);
-  data[P++]=STRQP;
-  IP=P<<2;
-  cData[IP++]=len;
-  for (i=0;i<len;i++)
-     {cData[IP++]=seq[i];}
-  while (IP&3) {cData[IP++]=0;}
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" ");
-  Serial.print(seq);
-}
 void ABORQ(char seq[]) {
   P=IP>>2;
   int i;
