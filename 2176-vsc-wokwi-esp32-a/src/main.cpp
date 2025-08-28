@@ -1532,92 +1532,93 @@ void setup() {
   NEXT(2, DROP, EXITT);
   HEADER(4, "PPPP");
 
-  // ###bookmark
-  // clang-format off
-
-
-  int PPPP=COLON(0);
+  int PPPP = COLON(0);
   FOR(0);
-  AFT(10,CR,DUPP,DUPP,DOLIT,0x9,UDOTR,SPACE,LINE,SWAP,TYPEE);
+  AFT(10, CR, DUPP, DUPP, DOLIT, 0x9, UDOTR, SPACE, LINE, SWAP, TYPEE);
   THEN(0);
-  NEXT(1,EXITT);
-  HEADER(3,"KKK");
-  int KKK=COLON(7,DOLIT,0x3FF59000,DOLIT,0x10,PP,DROP,EXITT);
-  HEADER(IMEDD+4,"THEN");
-  int THENN=COLON(4,HERE,SWAP,STORE,EXITT);
-  HEADER(IMEDD+3,"FOR");
-  int FORR=COLON(4,COMPI,TOR,HERE,EXITT);
-  HEADER(IMEDD+5,"BEGIN");
-  int BEGIN=COLON(2,HERE,EXITT);
-  HEADER(IMEDD+4,"NEXT");
-  int NEXT=COLON(4,COMPI,DONXT,COMMA,EXITT);
-  HEADER(IMEDD+5,"UNTIL");
-  int UNTIL=COLON(4,COMPI,QBRAN,COMMA,EXITT);
-  HEADER(IMEDD+5,"AGAIN");
-  int AGAIN=COLON(4,COMPI,BRAN,COMMA,EXITT);
-  HEADER(IMEDD+2,"IF");
-  int IFF=COLON(7,COMPI,QBRAN,HERE,DOLIT,0,COMMA,EXITT);
-  HEADER(IMEDD+5,"AHEAD");
-  int AHEAD=COLON(7,COMPI,BRAN,HERE,DOLIT,0,COMMA,EXITT);
-  HEADER(IMEDD+6,"REPEAT");
-  int REPEA=COLON(3,AGAIN,THENN,EXITT);
-  HEADER(IMEDD+3,"AFT");
-  int AFT=COLON(5,DROP,AHEAD,HERE,SWAP,EXITT);
-  HEADER(IMEDD+4,"ELSE");
-  int ELSEE=COLON(4,AHEAD,SWAP,THENN,EXITT);
-  HEADER(IMEDD+5,"WHILE");
-  int WHILEE=COLON(3,IFF,SWAP,EXITT);
-  HEADER(IMEDD+6,"ABORT\"");
-  int ABRTQ=COLON(6,DOLIT,ABORQP,HERE,STORE,STRCQ,EXITT);
-  HEADER(IMEDD+2,"$\"");
-  int STRQ=COLON(6,DOLIT,STRQP,HERE,STORE,STRCQ,EXITT);
-  HEADER(IMEDD+2,".\"");
-  int DOTQQ=COLON(6,DOLIT,DOTQP,HERE,STORE,STRCQ,EXITT);
-  HEADER(4,"CODE");
-  int CODE=COLON(5,TOKEN,SNAME,OVERT,ALIGN,EXITT);
-  HEADER(6,"CREATE");
-  int CREAT=COLON(5,CODE,DOLIT,0x203D,COMMA,EXITT);
-  HEADER(8,"VARIABLE");
-  int VARIA=COLON(5,CREAT,DOLIT,0,COMMA,EXITT);
-  HEADER(8,"CONSTANT");
-  int CONST=COLON(6,CODE,DOLIT,0x2004,COMMA,COMMA,EXITT);
-  HEADER(IMEDD+2,".(");
-  int DOTPR=COLON(5,DOLIT,0X29,PARSE,TYPES,EXITT);
-  HEADER(IMEDD+1,"\\");
-  int BKSLA=COLON(5,DOLIT,0xA,WORDD,DROP,EXITT);
-  HEADER(IMEDD+1,"(");
-  int PAREN=COLON(5,DOLIT,0X29,PARSE,DDROP,EXITT);
-  HEADER(12,"COMPILE-ONLY");
-  int ONLY=COLON(6,DOLIT,0x40,LAST,AT,PSTOR,EXITT);
-  HEADER(9,"IMMEDIATE");
-  int IMMED=COLON(6,DOLIT,0x80,LAST,AT,PSTOR,EXITT);
-  int ENDD=IP;
+  NEXT(1, EXITT);
+  HEADER(3, "KKK");
+  int KKK = COLON(7, DOLIT, 0x3FF59000, DOLIT, 0x10, PP, DROP, EXITT);
+  HEADER(IMEDD + 4, "THEN");
+  int THENN = COLON(4, HERE, SWAP, STORE, EXITT);
+  HEADER(IMEDD + 3, "FOR");
+  int FORR = COLON(4, COMPI, TOR, HERE, EXITT);
+  HEADER(IMEDD + 5, "BEGIN");
+  int BEGIN = COLON(2, HERE, EXITT);
+  HEADER(IMEDD + 4, "NEXT");
+  int NEXT = COLON(4, COMPI, DONXT, COMMA, EXITT);
+  HEADER(IMEDD + 5, "UNTIL");
+  int UNTIL = COLON(4, COMPI, QBRAN, COMMA, EXITT);
+  HEADER(IMEDD + 5, "AGAIN");
+  int AGAIN = COLON(4, COMPI, BRAN, COMMA, EXITT);
+  HEADER(IMEDD + 2, "IF");
+  int IFF = COLON(7, COMPI, QBRAN, HERE, DOLIT, 0, COMMA, EXITT);
+  HEADER(IMEDD + 5, "AHEAD");
+  int AHEAD = COLON(7, COMPI, BRAN, HERE, DOLIT, 0, COMMA, EXITT);
+  HEADER(IMEDD + 6, "REPEAT");
+  int REPEA = COLON(3, AGAIN, THENN, EXITT);
+  HEADER(IMEDD + 3, "AFT");
+  int AFT = COLON(5, DROP, AHEAD, HERE, SWAP, EXITT);
+  HEADER(IMEDD + 4, "ELSE");
+  int ELSEE = COLON(4, AHEAD, SWAP, THENN, EXITT);
+  HEADER(IMEDD + 5, "WHILE");
+  int WHILEE = COLON(3, IFF, SWAP, EXITT);
+  HEADER(IMEDD + 6, "ABORT\"");
+  int ABRTQ = COLON(6, DOLIT, ABORQP, HERE, STORE, STRCQ, EXITT);
+  HEADER(IMEDD + 2, "$\"");
+  int STRQ = COLON(6, DOLIT, STRQP, HERE, STORE, STRCQ, EXITT);
+  HEADER(IMEDD + 2, ".\"");
+  int DOTQQ = COLON(6, DOLIT, DOTQP, HERE, STORE, STRCQ, EXITT);
+  HEADER(4, "CODE");
+  int CODE = COLON(5, TOKEN, SNAME, OVERT, ALIGN, EXITT);
+  HEADER(6, "CREATE");
+  int CREAT = COLON(5, CODE, DOLIT, 0x203D, COMMA, EXITT);
+  HEADER(8, "VARIABLE");
+  int VARIA = COLON(5, CREAT, DOLIT, 0, COMMA, EXITT);
+  HEADER(8, "CONSTANT");
+  int CONST = COLON(6, CODE, DOLIT, 0x2004, COMMA, COMMA, EXITT);
+  HEADER(IMEDD + 2, ".(");
+  int DOTPR = COLON(5, DOLIT, 0X29, PARSE, TYPES, EXITT);
+  HEADER(IMEDD + 1, "\\");
+  int BKSLA = COLON(5, DOLIT, 0xA, WORDD, DROP, EXITT);
+  HEADER(IMEDD + 1, "(");
+  int PAREN = COLON(5, DOLIT, 0X29, PARSE, DDROP, EXITT);
+  HEADER(12, "COMPILE-ONLY");
+  int ONLY = COLON(6, DOLIT, 0x40, LAST, AT, PSTOR, EXITT);
+  HEADER(9, "IMMEDIATE");
+  int IMMED = COLON(6, DOLIT, 0x80, LAST, AT, PSTOR, EXITT);
+  int ENDD = IP;
   Serial.println();
   Serial.print("IP=");
   Serial.print(IP);
   Serial.print(" R-stack= ");
-  Serial.print(popR<<2,HEX);
-  IP=0x180;
-  int USER=LABEL(16,6,EVAL,0,0,0,0,0,0,0,0x10,IMMED-12,ENDD,IMMED-12,INTER,EVAL,0);
-// dump dictionary
-  IP=0;
-  for (len=0;len<0x120;len++){CheckSum();}
-// compile \data\load.txt 
-// if(!SPIFFS.begin(true)){Serial.println("Error mounting SPIFFS"); }
-  if (!myFS.begin(true)){Serial.println("Error mounting LittleFS"); }
+  Serial.print(popR << 2, HEX);
+  IP = 0x180;
+  int USER = LABEL(16, 6, EVAL, 0, 0, 0, 0, 0, 0, 0, 0x10, IMMED - 12, ENDD,
+                   IMMED - 12, INTER, EVAL, 0);
+  // dump dictionary
+  IP = 0;
+  for (len = 0; len < 0x120; len++) {
+    CheckSum();
+  }
+  // compile \data\load.txt
+  // if(!SPIFFS.begin(true)){Serial.println("Error mounting SPIFFS"); }
+  if (!myFS.begin(true)) {
+    Serial.println("Error mounting LittleFS");
+  }
 
   // File file = SPIFFS.open("/load.txt");
   File file = myFS.open("/load.txt");
 
-  if(file) {
+  if (file) {
     Serial.print("Load file: ");
-    len = file.read(cData+0x8000,0x7000);
+    len = file.read(cData + 0x8000, 0x7000);
     Serial.print(len);
     Serial.println(" bytes.");
-    data[0x66] = 0;                   // >IN
-    data[0x67] = len;                 // #TIB
-    data[0x68] = 0x8000;              // 'TIB
-    P = 0x180;                        // EVAL
+    data[0x66] = 0;      // >IN
+    data[0x67] = len;    // #TIB
+    data[0x68] = 0x8000; // 'TIB
+    P = 0x180;           // EVAL
     WP = 0x184;
     evaluate();
     Serial.println(" Done loading.");
@@ -1628,17 +1629,19 @@ void setup() {
 }
 
 void loop() {
-    int len;
-    while (true) {             // if there's bytes to read from the client,
-      len = Serial.readBytes(cData, 256);
-      if (len) {break;}
-      }
-    data[0x66] = 0;                   // >IN
-    data[0x67] = len;                 // #TIB
-    data[0x68] = 0;                   // 'TIB
-    P = 0x180;                        // EVAL
-    WP = 0x184;
-    evaluate();
+  int len;
+  while (true) { // if there's bytes to read from the client,
+    len = Serial.readBytes(cData, 256);
+    if (len) {
+      break;
+    }
+  }
+  data[0x66] = 0;   // >IN
+  data[0x67] = len; // #TIB
+  data[0x68] = 0;   // 'TIB
+  P = 0x180;        // EVAL
+  WP = 0x184;
+  evaluate();
 }
 
 /* end. */
