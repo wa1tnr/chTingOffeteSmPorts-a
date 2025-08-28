@@ -4,3 +4,4 @@ DECIMAL
 
 : QHELLO CR ." Hello, world!" ;
 
+: VERSION ." Thu 28 Aug 14:16:17 UTC 2025" ;
