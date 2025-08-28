@@ -1,3 +1,19 @@
+Thu 28 Aug 13:01:01 UTC 2025
+
+Have worked with Ting's system for a while now and have
+become a little familiar with its fundmentals.
+
+Current (2176, 62.ino) effort seems to have succeeded - iirc
+the claim is now made that the entire program is written
+in C++ whereas the earlier one (2174) relied also on a
+precompiled ROM image (forming the primary Forth dictionary
+for 2174).
+
+Will clang-format 2176 main.cpp soon.  It is therefore still
+as Ting wrote it, with necessary edits, and also without the
+ctrl m line endings Ting had.
+
+
 Tue 26 Aug 18:01:43 UTC 2025
 
 Did a quick check from a fresh clone off the github repo.
