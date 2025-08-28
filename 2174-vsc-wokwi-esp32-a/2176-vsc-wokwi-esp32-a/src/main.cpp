@@ -158,8 +158,8 @@ void AGAIN(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" AGAIN ");
-  data[P++]=BRAN;SPACED_EOL_
-  data[P++]=popR<<2;SPACED_EOL_
+  data[P++]=BRAN;
+  data[P++]=popR<<2;
   va_list argList;
   va_start(argList, len);
   for(; len;len--) {
@@ -176,8 +176,8 @@ void UNTIL(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" UNTIL ");
-  data[P++]=QBRAN;SPACED_EOL_
-  data[P++]=popR<<2;SPACED_EOL_
+  data[P++]=QBRAN;
+  data[P++]=popR<<2;
   va_list argList;
   va_start(argList, len);
   for(; len;len--) {
@@ -195,8 +195,8 @@ void WHILE(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" WHILE ");
-  data[P++]=QBRAN;SPACED_EOL_
-  data[P++]=0;SPACED_EOL_
+  data[P++]=QBRAN;
+  data[P++]=0;
   k=popR;
   pushR=(P-1);
   pushR=k;
@@ -216,8 +216,8 @@ void REPEAT(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" REPEAT ");
-  data[P++]=BRAN;SPACED_EOL_
-  data[P++]=popR<<2;SPACED_EOL_
+  data[P++]=BRAN;
+  data[P++]=popR<<2;
   data[popR]=P<<2;
   va_list argList;
   va_start(argList, len);
@@ -235,9 +235,9 @@ void IF(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" IF ");
-  data[P++]=QBRAN;SPACED_EOL_
+  data[P++]=QBRAN;
   pushR=P;
-  data[P++]=0;SPACED_EOL_
+  data[P++]=0;
   va_list argList;
   va_start(argList, len);
   for(; len;len--) {
@@ -254,9 +254,9 @@ void ELSE(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" ELSE ");
-  data[P++]=BRAN;SPACED_EOL_
-  data[P++]=0;SPACED_EOL_
-  data[popR]=P<<2;SPACED_EOL_
+  data[P++]=BRAN;
+  data[P++]=0;
+  data[popR]=P<<2;
   pushR=P-1;
   va_list argList;
   va_start(argList, len);
@@ -274,7 +274,7 @@ void THEN(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" THEN ");
-  data[popR]=P<<2;SPACED_EOL_
+  data[popR]=P<<2;
   va_list argList;
   va_start(argList, len);
   for(; len;len--) {
@@ -291,7 +291,7 @@ void FOR(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" FOR ");
-  data[P++]=TOR;SPACED_EOL_
+  data[P++]=TOR;
   pushR=P;
   va_list argList;
   va_start(argList, len);
@@ -309,8 +309,8 @@ void NEXT(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" NEXT ");
-  data[P++]=DONXT;SPACED_EOL_
-  data[P++]=popR<<2;SPACED_EOL_
+  data[P++]=DONXT;
+  data[P++]=popR<<2;
   va_list argList;
   va_start(argList, len);
   for(; len;len--) {
@@ -328,8 +328,8 @@ void AFT(int len, ... ) {
   Serial.println();
   Serial.print(IP,HEX);
   Serial.print(" AFT ");
-  data[P++]=BRAN;SPACED_EOL_
-  data[P++]=0;SPACED_EOL_
+  data[P++]=BRAN;
+  data[P++]=0;
   k=popR;
   pushR=P;
   pushR=P-1;
@@ -430,7 +430,7 @@ void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax = 255) {
 
 void next(void)
 { P = data[IP>>2];
-  IP += 4;SPACED_EOL_
+  IP += 4;
   WP = P+4;  }
 
 void accep()
@@ -448,8 +448,8 @@ void qrx(void)
 void txsto(void)
 {  Serial.write( (unsigned char) top);
    char c=top;
-   pop;SPACED_EOL_
-}SPACED_EOL_
+   pop;
+}
 
 void docon(void)
 {  push data[WP>>2]; }
@@ -461,7 +461,7 @@ void dolit(void)
 
 void dolist(void)
 {   rack[(unsigned char)++R] = IP;
-  IP = WP;SPACED_EOL_
+  IP = WP;
   next(); }
 
 void exitt(void)
@@ -476,17 +476,17 @@ void execu(void)
 void donext(void)
 {   if(rack[(unsigned char)R]) {
     rack[(unsigned char)R] -= 1 ;
-    IP = data[IP>>2];SPACED_EOL_
+    IP = data[IP>>2];
   } else { IP += 4;  (unsigned char)R-- ;  }
   next(); }
 
 void qbran(void)
-{   if(top == 0) IP = data[IP>>2];SPACED_EOL_
-  else IP += 4;  pop;SPACED_EOL_
+{   if(top == 0) IP = data[IP>>2];
+  else IP += 4;  pop;
   next(); }
 
 void bran(void)
-{   IP = data[IP>>2];SPACED_EOL_
+{   IP = data[IP>>2];
   next(); }
 
 void store(void)
@@ -546,10 +546,10 @@ void xorr(void)
 
 void uplus(void)
 {   stack[(unsigned char)S] += top;
-  top = LOWER(stack[(unsigned char)S], top);  }SPACED_EOL_
+  top = LOWER(stack[(unsigned char)S], top);  }
 
 void nop(void)
-{   next(); }SPACED_EOL_
+{   next(); }
 
 void qdup(void)
 {   if(top) stack[(unsigned char)++S] = top ;  }
@@ -578,7 +578,7 @@ void negat(void)
 void dnega(void)
 {   inver();
   tor();
-  inver();SPACED_EOL_
+  inver();
   push 1;
   uplus();
   rfrom();
@@ -728,10 +728,10 @@ void freq(void)
 
 void (*primitives[72])(void) = {
     /* case 0 */ nop,
-    /* case 1 */ accep,SPACED_EOL_
-    /* case 2 */ qrx,   SPACED_EOL_
-    /* case 3 */ txsto, SPACED_EOL_
-    /* case 4 */ docon,  SPACED_EOL_
+    /* case 1 */ accep,
+    /* case 2 */ qrx,   
+    /* case 3 */ txsto, 
+    /* case 4 */ docon,  
     /* case 5 */ dolit,
     /* case 6 */ dolist,
     /* case 7 */ exitt,
@@ -748,7 +748,7 @@ void (*primitives[72])(void) = {
     /* case 18 */ rfrom,
     /* case 19 */ rat,
     /* case 20 */ tor,
-    /* case 21 */ nop,SPACED_EOL_
+    /* case 21 */ nop,
     /* case 22 */ nop,
     /* case 23 */ drop,
     /* case 24 */ dup,
@@ -759,45 +759,45 @@ void (*primitives[72])(void) = {
     /* case 29 */ orr,
     /* case 30 */ xorr,
     /* case 31 */ uplus,
-    /* case 32 */ next,SPACED_EOL_
-    /* case 33 */ qdup,SPACED_EOL_
-    /* case 34 */ rot,SPACED_EOL_
-    /* case 35 */ ddrop,SPACED_EOL_
-    /* case 36 */ ddup,SPACED_EOL_
+    /* case 32 */ next,
+    /* case 33 */ qdup,
+    /* case 34 */ rot,
+    /* case 35 */ ddrop,
+    /* case 36 */ ddup,
     /* case 37 */ plus,
-    /* case 38 */ inver,SPACED_EOL_
-    /* case 39 */ negat,SPACED_EOL_
-    /* case 40 */ dnega,SPACED_EOL_
-    /* case 41 */ subb,SPACED_EOL_
+    /* case 38 */ inver,
+    /* case 39 */ negat,
+    /* case 40 */ dnega,
+    /* case 41 */ subb,
     /* case 42 */ abss,
-    /* case 43 */ equal,SPACED_EOL_
-    /* case 44 */ uless,SPACED_EOL_
-    /* case 45 */ less,  SPACED_EOL_
+    /* case 43 */ equal,
+    /* case 44 */ uless,
+    /* case 45 */ less,  
     /* case 46 */ ummod,
     /* case 47 */ msmod,
-    /* case 48 */ slmod,SPACED_EOL_
-    /* case 49 */ mod, SPACED_EOL_
-    /* case 50 */ slash,SPACED_EOL_
-    /* case 51 */ umsta,  SPACED_EOL_
-    /* case 52 */ star,SPACED_EOL_
-    /* case 53 */ mstar,SPACED_EOL_
-    /* case 54 */ ssmod,SPACED_EOL_
-    /* case 55 */ stasl,SPACED_EOL_
-    /* case 56 */ pick,SPACED_EOL_
-    /* case 57 */ pstor,SPACED_EOL_
-    /* case 58 */ dstor,SPACED_EOL_
-    /* case 59 */ dat,SPACED_EOL_
-    /* case 60 */ count,SPACED_EOL_
-    /* case 61 */ dovar,SPACED_EOL_
-    /* case 62 */ maxx,SPACED_EOL_
+    /* case 48 */ slmod,
+    /* case 49 */ mod, 
+    /* case 50 */ slash,
+    /* case 51 */ umsta,  
+    /* case 52 */ star,
+    /* case 53 */ mstar,
+    /* case 54 */ ssmod,
+    /* case 55 */ stasl,
+    /* case 56 */ pick,
+    /* case 57 */ pstor,
+    /* case 58 */ dstor,
+    /* case 59 */ dat,
+    /* case 60 */ count,
+    /* case 61 */ dovar,
+    /* case 62 */ maxx,
     /* case 63 */ minn,
     /* case 64 */ audio,
     /* case 65 */ sendPacket,
     /* case 66 */ poke,
-    /* case 67 */ peeek,SPACED_EOL_
+    /* case 67 */ peeek,
     /* case 68 */ adc,
     /* case 69 */ pin,
-    /* case 70 */ duty,SPACED_EOL_
+    /* case 70 */ duty,
     /* case 71 */ freq };
 
 int as_nop=0;
@@ -877,10 +877,10 @@ void evaluate()
 { while (true){
     bytecode=(unsigned char)cData[P++];
     if (bytecode) {primitives[bytecode]();}
-    else {break;}SPACED_EOL_
+    else {break;}
   }                 // break on NOP
 }
- SPACED_EOL_
+ 
 void setup()
 { P = 0x180;
   WP = 0x184;
@@ -892,19 +892,19 @@ void setup()
   Serial.begin(115200);
   delay(100);
   Serial.println("Booting esp32Forth v6.2 ...");
- SPACED_EOL_
+ 
 // Setup timer and attach timer to a led pin
   ledcSetup(0, 100, LEDC_TIMER_13_BIT);
   ledcAttachPin(5, 0);
   ledcAnalogWrite(0, 250, brightness);
   pinMode(2,OUTPUT);
-  digitalWrite(2, HIGH);   // turn the LED2 onSPACED_EOL_
+  digitalWrite(2, HIGH);   // turn the LED2 on
   pinMode(16,OUTPUT);
   digitalWrite(16, LOW);   // motor1 forward
   pinMode(17,OUTPUT);
-  digitalWrite(17, LOW);   // motor1 backwardSPACED_EOL_
+  digitalWrite(17, LOW);   // motor1 backward
   pinMode(18,OUTPUT);
-  digitalWrite(18, LOW);   // motor2 forwardSPACED_EOL_
+  digitalWrite(18, LOW);   // motor2 forward
   pinMode(19,OUTPUT);
   digitalWrite(19, LOW);   // motor2 bacward
 
@@ -946,11 +946,11 @@ void setup()
   HEADER(6,"ACCEPT");
   int ACCEP=CODE(4,as_accept,as_next,0,0);
   HEADER(4,"?KEY");
-  int QKEY=CODE(4,as_qrx,as_next,0,0); SPACED_EOL_
+  int QKEY=CODE(4,as_qrx,as_next,0,0); 
   HEADER(4,"EMIT");
-  int EMIT=CODE(4,as_txsto,as_next,0,0); SPACED_EOL_
+  int EMIT=CODE(4,as_txsto,as_next,0,0); 
   HEADER(5,"DOLIT");
-  int DOLIT=CODE(4,as_dolit,as_next,0,0);SPACED_EOL_
+  int DOLIT=CODE(4,as_dolit,as_next,0,0);
   HEADER(6,"DOLIST");
   int DOLST=CODE(4,as_dolist,as_next,0,0);
   HEADER(4,"EXIT");
@@ -996,29 +996,29 @@ void setup()
   HEADER(3,"UM+");
   int UPLUS=CODE(4,as_uplus,as_next,0,0);
   HEADER(4,"?DUP");
-  int QDUP=CODE(4,as_qdup,as_next,0,0);SPACED_EOL_
+  int QDUP=CODE(4,as_qdup,as_next,0,0);
   HEADER(3,"ROT");
-  int ROT=CODE(4,as_rot,as_next,0,0);SPACED_EOL_
+  int ROT=CODE(4,as_rot,as_next,0,0);
   HEADER(5,"2DROP");
-  int DDROP=CODE(4,as_ddrop,as_next,0,0);SPACED_EOL_
+  int DDROP=CODE(4,as_ddrop,as_next,0,0);
   HEADER(4,"2DUP");
-  int DDUP=CODE(4,as_ddup,as_next,0,0);SPACED_EOL_
+  int DDUP=CODE(4,as_ddup,as_next,0,0);
   HEADER(1,"+");
   int PLUS=CODE(4,as_plus,as_next,0,0);
   HEADER(3,"NOT");
   int INVER=CODE(4,as_inver,as_next,0,0);
   HEADER(6,"NEGATE");
-  int NEGAT=CODE(4,as_negat,as_next,0,0);SPACED_EOL_
+  int NEGAT=CODE(4,as_negat,as_next,0,0);
   HEADER(7,"DNEGATE");
-  int DNEGA=CODE(4,as_dnega,as_next,0,0);SPACED_EOL_
+  int DNEGA=CODE(4,as_dnega,as_next,0,0);
   HEADER(1,"-");
-  int SUBBB=CODE(4,as_subb,as_next,0,0);SPACED_EOL_
+  int SUBBB=CODE(4,as_subb,as_next,0,0);
   HEADER(3,"ABS");
   int ABSS=CODE(4,as_abss,as_next,0,0);
   HEADER(1,"=");
-  int EQUAL=CODE(4,as_equal,as_next,0,0);SPACED_EOL_
+  int EQUAL=CODE(4,as_equal,as_next,0,0);
   HEADER(2,"U<");
-  int ULESS=CODE(4,as_uless,as_next,0,0);SPACED_EOL_
+  int ULESS=CODE(4,as_uless,as_next,0,0);
   HEADER(1,"<");
   int LESS=CODE(4,as_less,as_next,0,0);
   HEADER(6,"UM/MOD");
@@ -1026,31 +1026,31 @@ void setup()
   HEADER(5,"M/MOD");
   int MSMOD=CODE(4,as_msmod,as_next,0,0);
   HEADER(4,"/MOD");
-  int SLMOD=CODE(4,as_slmod,as_next,0,0);SPACED_EOL_
+  int SLMOD=CODE(4,as_slmod,as_next,0,0);
   HEADER(3,"MOD");
-  int MODD=CODE(4,as_mod,as_next,0,0);  SPACED_EOL_
+  int MODD=CODE(4,as_mod,as_next,0,0);  
   HEADER(1,"/");
   int SLASH=CODE(4,as_slash,as_next,0,0);
   HEADER(3,"UM*");
-  int UMSTA=CODE(4,as_umsta,as_next,0,0);  SPACED_EOL_
+  int UMSTA=CODE(4,as_umsta,as_next,0,0);  
   HEADER(1,"*");
-  int STAR=CODE(4,as_star,as_next,0,0);SPACED_EOL_
+  int STAR=CODE(4,as_star,as_next,0,0);
   HEADER(2,"M*");
-  int MSTAR=CODE(4,as_mstar,as_next,0,0);SPACED_EOL_
+  int MSTAR=CODE(4,as_mstar,as_next,0,0);
   HEADER(5,"*/MOD");
-  int SSMOD=CODE(4,as_ssmod,as_next,0,0);SPACED_EOL_
+  int SSMOD=CODE(4,as_ssmod,as_next,0,0);
   HEADER(2,"*/");
   int STASL=CODE(4,as_stasl,as_next,0,0);
   HEADER(4,"PICK");
-  int PICK=CODE(4,as_pick,as_next,0,0);SPACED_EOL_
+  int PICK=CODE(4,as_pick,as_next,0,0);
   HEADER(2,"+!");
-  int PSTOR=CODE(4,as_pstor,as_next,0,0);SPACED_EOL_
+  int PSTOR=CODE(4,as_pstor,as_next,0,0);
   HEADER(2,"2!");
-  int DSTOR=CODE(4,as_dstor,as_next,0,0);SPACED_EOL_
+  int DSTOR=CODE(4,as_dstor,as_next,0,0);
   HEADER(2,"2@");
   int DAT=CODE(4,as_dat,as_next,0,0);
   HEADER(5,"COUNT");
-  int COUNT=CODE(4,as_count,as_next,0,0);SPACED_EOL_
+  int COUNT=CODE(4,as_count,as_next,0,0);
   HEADER(3,"MAX");
   int MAX=CODE(4,as_max,as_next,0,0);
   HEADER(3,"MIN");
@@ -1503,12 +1503,12 @@ void setup()
 // dump dictionary
   IP=0;
   for (len=0;len<0x120;len++){CheckSum();}
-// compile \data\load.txt SPACED_EOL_
+// compile \data\load.txt 
   if(!SPIFFS.begin(true)){Serial.println("Error mounting SPIFFS"); }
   File file = SPIFFS.open("/load.txt");
   if(file) {
     Serial.print("Load file: ");
-    len = file.read(cData+0x8000,0x7000);SPACED_EOL_
+    len = file.read(cData+0x8000,0x7000);
     Serial.print(len);
     Serial.println(" bytes.");
     data[0x66] = 0;                   // >IN
@@ -1517,7 +1517,7 @@ void setup()
     P = 0x180;                        // EVAL
     WP = 0x184;
     evaluate();
-    Serial.println(" Done loading.");SPACED_EOL_
+    Serial.println(" Done loading.");
     file.close();
     SPIFFS.end();
   }
@@ -1526,7 +1526,7 @@ void setup()
 void loop() {
     int len;
     while (true) {             // if there's bytes to read from the client,
-      len = Serial.readBytes(cData, 256);SPACED_EOL_
+      len = Serial.readBytes(cData, 256);
       if (len) {break;}
       }
     data[0x66] = 0;                   // >IN
