@@ -1,5 +1,9 @@
+/* incremental diff to new clang-format 28 August 13:19z 2025 */
+/* The effort being made to read what is reported as the diff between versions. */
+
+// clang-format off
 /******************************************************************************/
-/* esp32Forth, Version 6.2 : for NodeMCU ESP32S                                 */
+/* esp32Forth, Version 6.2 : for NodeMCU ESP32S                               */
 /******************************************************************************/
 /* 16jun19cht  _62                                                            */
 /* structures                                                                 */
@@ -45,14 +49,16 @@
 /* esp32Forth_51                                                              */
 /******************************************************************************/
 
-# define  FALSE 0
-# define  TRUE  -1
-# define  LOGICAL ? TRUE : FALSE
-# define  LOWER(x,y) ((unsigned long)(x)<(unsigned long)(y))
-# define  pop top = stack[(unsigned char)S--]
-# define  push stack[(unsigned char)++S] = top; top =
-# define  popR rack[(unsigned char)R--]
-# define  pushR rack[(unsigned char)++R]
+#define FALSE 0
+#define TRUE -1
+#define LOGICAL ? TRUE : FALSE
+#define LOWER(x, y) ((unsigned long)(x) < (unsigned long)(y))
+#define pop top = stack[(unsigned char)S--]
+#define push stack[(unsigned char)++S] = top; top =
+#define popR rack[(unsigned char)R--]
+#define pushR rack[(unsigned char)++R]
+
+// clang-format on
 
 long rack[256] = {0};
 long stack[256] = {0};
