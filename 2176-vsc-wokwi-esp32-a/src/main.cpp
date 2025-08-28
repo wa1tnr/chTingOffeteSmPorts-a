@@ -2,7 +2,9 @@
 /* The effort being made to read what is reported as the diff between versions.
  */
 
-// Thu 28 Aug 14:06:39 UTC 2025
+// Scroll to ###kludges   for local mods during early porting efforts (or later)
+
+// Thu 28 Aug 18:47:22 UTC 2025
 
 // clang-format off
 /******************************************************************************/
@@ -76,6 +78,15 @@ int BRAN = 0, QBRAN = 0, DONXT = 0, DOTQP = 0, STRQP = 0, TOR = 0, ABORQP = 0;
 long data[16000] = {};
 int IMEDD = 0x80;
 int COMPO = 0x40;
+
+
+// ###kludges  -  early efforts to understand the program
+//                through kudge functions
+
+// kludge: timeToView - pause at program start
+void timeToView() {
+  delay(5100);
+}
 
 void HEADER(int lex, char seq[]) {
   P = IP >> 2;
@@ -967,6 +978,10 @@ void setup() {
   Serial.begin(115200);
   delay(100);
   Serial.println("Booting esp32Forth v6.2 ...");
+  // TODO FIXME  timeToView() is a kludge for analysis of early program activity
+  timeToView();
+  // TODO FIXME  Serial.end() is likely wildly inappropriate to use here as a suppresion
+  Serial.end();
 
   // Setup timer and attach timer to a led pin
   // TODO FIXME ledcSetup(0, 100, LEDC_TIMER_13_BIT);
@@ -1384,7 +1399,7 @@ void setup() {
   int DOTOK = COLON(6, CR, DOLIT, INTER, TEVAL, AT, EQUAL);
   IF(14, TOR, TOR, TOR, DUPP, DOT, RFROM, DUPP, DOT, RFROM, DUPP, DOT, RFROM,
      DUPP, DOT);
-  DOTQ(" ok>");
+  DOTQ(" ok> ");
   THEN(1, EXITT);
   HEADER(4, "EVAL");
   int EVAL = COLON(1, LBRAC);
@@ -1588,6 +1603,19 @@ void setup() {
   HEADER(9, "IMMEDIATE");
   int IMMED = COLON(6, DOLIT, 0x80, LAST, AT, PSTOR, EXITT);
   int ENDD = IP;
+
+  // paired with an early 'Serial.end()' above, the system
+  // seems to do what was wanted - suppress all that output
+  // during the boot sequence.
+
+  // could cause problems; if glitchy suspect this approach
+  // was very wrong, indeed.
+
+  // TODO FIXME - find an appropriate means to suppress all the
+  // so-called 'extra' output during the boot sequence.
+
+  Serial.begin(115200);
+
   Serial.println();
   Serial.print("IP=");
   Serial.print(IP);
@@ -1599,7 +1627,9 @@ void setup() {
   // dump dictionary
   IP = 0;
   for (len = 0; len < 0x120; len++) {
-    CheckSum();
+    // TODO FIXME - ONLY INTUITION - no reason to suspect CheckSum() is optional:
+    // CheckSum();
+    // That said, commenting it seemed to do 'what was wanted' (no dump on boot)
   }
   // compile \data\load.txt
   // if(!SPIFFS.begin(true)){Serial.println("Error mounting SPIFFS"); }
@@ -1611,6 +1641,7 @@ void setup() {
   File file = myFS.open("/load.txt");
 
   if (file) {
+    Serial.println("");
     Serial.print("Load file: ");
     len = file.read(cData + 0x8000, 0x7000);
     Serial.print(len);
