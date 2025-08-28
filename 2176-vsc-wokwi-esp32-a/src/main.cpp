@@ -1,5 +1,6 @@
 /* incremental diff to new clang-format 28 August 13:19z 2025 */
-/* The effort being made to read what is reported as the diff between versions. */
+/* The effort being made to read what is reported as the diff between versions.
+ */
 
 // clang-format off
 /******************************************************************************/
@@ -62,38 +63,46 @@
 
 long rack[256] = {0};
 long stack[256] = {0};
-unsigned char R=0, S=0, bytecode, c ;
-long* Pointer ;
-long  P, IP, WP, top, thread, len;
-uint8_t* cData ;
-long long int d, n, m ;
-int BRAN=0,QBRAN=0,DONXT=0,DOTQP=0,STRQP=0,TOR=0,ABORQP=0;
+unsigned char R = 0, S = 0, bytecode, c;
+long *Pointer;
+long P, IP, WP, top, thread, len;
+uint8_t *cData;
+long long int d, n, m;
+int BRAN = 0, QBRAN = 0, DONXT = 0, DOTQP = 0, STRQP = 0, TOR = 0, ABORQP = 0;
 
 //#include "rom_54.h" /* load dictionary */
 long data[16000] = {};
-int IMEDD=0x80;
-int COMPO=0x40;
+int IMEDD = 0x80;
+int COMPO = 0x40;
 
 void HEADER(int lex, char seq[]) {
-  P=IP>>2;
+  P = IP >> 2;
   int i;
-  int len=lex&31;
-  data[P++]=thread;
-  IP=P<<2;
+  int len = lex & 31;
+  data[P++] = thread;
+  IP = P << 2;
   Serial.println();
-  Serial.print(thread,HEX);
-  for (i=thread>>2;i<P;i++)
-     {Serial.print(" ");Serial.print(data[i],HEX);}
-  thread=IP;
-  cData[IP++]=lex;
-  for (i=0;i<len;i++)
-     {cData[IP++]=seq[i];}
-  while (IP&3) {cData[IP++]=0;}
+  Serial.print(thread, HEX);
+  for (i = thread >> 2; i < P; i++) {
+    Serial.print(" ");
+    Serial.print(data[i], HEX);
+  }
+  thread = IP;
+  cData[IP++] = lex;
+  for (i = 0; i < len; i++) {
+    cData[IP++] = seq[i];
+  }
+  while (IP & 3) {
+    cData[IP++] = 0;
+  }
   Serial.println();
   Serial.print(seq);
   Serial.print(" ");
-  Serial.print(IP,HEX);
+  Serial.print(IP, HEX);
 }
+
+// clang-format off
+
 int CODE(int len, ... ) {
   int addr=IP;
   int s;
