@@ -188,127 +188,136 @@ void AGAIN(int len, ...) {
   va_end(argList);
 }
 
+void UNTIL(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" UNTIL ");
+  data[P++] = QBRAN;
+  data[P++] = popR << 2;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+
+void WHILE(int len, ...) {
+  P = IP >> 2;
+  int k;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" WHILE ");
+  data[P++] = QBRAN;
+  data[P++] = 0;
+  k = popR;
+  pushR = (P - 1);
+  pushR = k;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+
+void REPEAT(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" REPEAT ");
+  data[P++] = BRAN;
+  data[P++] = popR << 2;
+  data[popR] = P << 2;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+
+void IF(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" IF ");
+  data[P++] = QBRAN;
+  pushR = P;
+  data[P++] = 0;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+
+void ELSE(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" ELSE ");
+  data[P++] = BRAN;
+  data[P++] = 0;
+  data[popR] = P << 2;
+  pushR = P - 1;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+
+void THEN(int len, ...) {
+  P = IP >> 2;
+  Serial.println();
+  Serial.print(IP, HEX);
+  Serial.print(" THEN ");
+  data[popR] = P << 2;
+  va_list argList;
+  va_start(argList, len);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
+    Serial.print(" ");
+    Serial.print(j, HEX);
+  }
+  IP = P << 2;
+  va_end(argList);
+}
+
 // ###bookmark
 // clang-format off
 
 
 
 
-void UNTIL(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" UNTIL ");
-  data[P++]=QBRAN;
-  data[P++]=popR<<2;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void WHILE(int len, ... ) {
-  P=IP>>2;
-  int k;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" WHILE ");
-  data[P++]=QBRAN;
-  data[P++]=0;
-  k=popR;
-  pushR=(P-1);
-  pushR=k;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void REPEAT(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" REPEAT ");
-  data[P++]=BRAN;
-  data[P++]=popR<<2;
-  data[popR]=P<<2;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void IF(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" IF ");
-  data[P++]=QBRAN;
-  pushR=P;
-  data[P++]=0;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void ELSE(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" ELSE ");
-  data[P++]=BRAN;
-  data[P++]=0;
-  data[popR]=P<<2;
-  pushR=P-1;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
-void THEN(int len, ... ) {
-  P=IP>>2;
-  Serial.println();
-  Serial.print(IP,HEX);
-  Serial.print(" THEN ");
-  data[popR]=P<<2;
-  va_list argList;
-  va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
-    Serial.print(" ");
-    Serial.print(j,HEX);
-  }
-  IP=P<<2;
-  va_end(argList);
-  }
+
+
+
 void FOR(int len, ... ) {
   P=IP>>2;
   Serial.println();
