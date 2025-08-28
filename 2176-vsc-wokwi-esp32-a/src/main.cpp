@@ -404,53 +404,49 @@ void STRQ(char seq[]) {
   Serial.print(seq);
 }
 
-// ###bookmark
-// clang-format off
-
-
-
-
-
 void ABORQ(char seq[]) {
-  P=IP>>2;
+  P = IP >> 2;
   int i;
-  int len=strlen(seq);
-  data[P++]=ABORQP;
-  IP=P<<2;
-  cData[IP++]=len;
-  for (i=0;i<len;i++)
-     {cData[IP++]=seq[i];}
-  while (IP&3) {cData[IP++]=0;}
+  int len = strlen(seq);
+  data[P++] = ABORQP;
+  IP = P << 2;
+  cData[IP++] = len;
+  for (i = 0; i < len; i++) {
+    cData[IP++] = seq[i];
+  }
+  while (IP & 3) {
+    cData[IP++] = 0;
+  }
   Serial.println();
-  Serial.print(IP,HEX);
+  Serial.print(IP, HEX);
   Serial.print(" ");
   Serial.print(seq);
 }
 
 void CheckSum() {
   int i;
-  char sum=0;
+  char sum = 0;
   Serial.println();
-  Serial.printf("%4x ",IP);
-  for (i=0;i<32;i++) {
+  Serial.printf("%4x ", IP);
+  for (i = 0; i < 32; i++) {
     sum += cData[IP];
-    Serial.printf("%2x",cData[IP++]);
+    Serial.printf("%2x", cData[IP++]);
   }
-  Serial.printf(" %2x",sum);
+  Serial.printf(" %2x", sum);
 }
 /******************************************************************************/
 /* ledc                                                                       */
 /******************************************************************************/
 /* LEDC Software Fade */
 // use first channel of 16 channels (started from zero)
-#define LEDC_CHANNEL_0     0
+#define LEDC_CHANNEL_0 0
 // use 13 bit precission for LEDC timer
-#define LEDC_TIMER_13_BIT  13
+#define LEDC_TIMER_13_BIT 13
 // use 5000 Hz as a LEDC base frequency
-#define LEDC_BASE_FREQ     5000
+#define LEDC_BASE_FREQ 5000
 // fade LED PIN (replace with LED_BUILTIN constant for built-in LED)
-#define LED_PIN            5
-int brightness = 255;    // how bright the LED is
+#define LED_PIN 5
+int brightness = 255; // how bright the LED is
 
 // Arduino like analogWrite
 // value has to be between 0 and valueMax
@@ -465,146 +461,167 @@ void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax = 255) {
 /* PRIMITIVES                                                                 */
 /******************************************************************************/
 
-void next(void)
-{ P = data[IP>>2];
+void next(void) {
+  P = data[IP >> 2];
   IP += 4;
-  WP = P+4;  }
+  WP = P + 4;
+}
 
 void accep()
 /* WiFiClient */
-{ while (Serial.available()) {
-    len = Serial.readBytes(cData, top); }
+{
+  while (Serial.available()) {
+    len = Serial.readBytes(cData, top);
+  }
   Serial.write(cData, len);
   top = len;
 }
-void qrx(void)
-  { while (Serial.available() == 0) {};
-    push Serial.read();
-    push -1; }
-
-void txsto(void)
-{  Serial.write( (unsigned char) top);
-   char c=top;
-   pop;
+void qrx(void) {
+  while (Serial.available() == 0) {
+  };
+  push Serial.read();
+  push - 1;
 }
 
-void docon(void)
-{  push data[WP>>2]; }
+void txsto(void) {
+  Serial.write((unsigned char)top);
+  char c = top;
+  pop;
+}
 
-void dolit(void)
-{   push data[IP>>2];
+void docon(void) { push data[WP >> 2]; }
+
+void dolit(void) {
+  push data[IP >> 2];
   IP += 4;
-  next(); }
+  next();
+}
 
-void dolist(void)
-{   rack[(unsigned char)++R] = IP;
+void dolist(void) {
+  rack[(unsigned char)++R] = IP;
   IP = WP;
-  next(); }
+  next();
+}
 
-void exitt(void)
-{   IP = (long) rack[(unsigned char)R--];
-  next(); }
+void exitt(void) {
+  IP = (long)rack[(unsigned char)R--];
+  next();
+}
 
-void execu(void)
-{  P = top;
+void execu(void) {
+  P = top;
   WP = P + 4;
-  pop; }
+  pop;
+}
 
-void donext(void)
-{   if(rack[(unsigned char)R]) {
-    rack[(unsigned char)R] -= 1 ;
-    IP = data[IP>>2];
-  } else { IP += 4;  (unsigned char)R-- ;  }
-  next(); }
+void donext(void) {
+  if (rack[(unsigned char)R]) {
+    rack[(unsigned char)R] -= 1;
+    IP = data[IP >> 2];
+  } else {
+    IP += 4;
+    (unsigned char)R--;
+  }
+  next();
+}
 
-void qbran(void)
-{   if(top == 0) IP = data[IP>>2];
-  else IP += 4;  pop;
-  next(); }
+void qbran(void) {
+  if (top == 0)
+    IP = data[IP >> 2];
+  else
+    IP += 4;
+  pop;
+  next();
+}
 
-void bran(void)
-{   IP = data[IP>>2];
-  next(); }
+void bran(void) {
+  IP = data[IP >> 2];
+  next();
+}
 
-void store(void)
-{   data[top>>2] = stack[(unsigned char)S--];
-  pop;  }
+void store(void) {
+  data[top >> 2] = stack[(unsigned char)S--];
+  pop;
+}
 
-void at(void)
-{   top = data[top>>2];  }
+void at(void) { top = data[top >> 2]; }
 
-void cstor(void)
-{   cData[top] = (unsigned char) stack[(unsigned char)S--];
-  pop;  }
+void cstor(void) {
+  cData[top] = (unsigned char)stack[(unsigned char)S--];
+  pop;
+}
 
-void cat(void)
-{   top = (long) cData[top];  }
+void cat(void) { top = (long)cData[top]; }
 
 void rpat(void) {}
 void rpsto(void) {}
 
-void rfrom(void)
-{   push rack[(unsigned char)R--];  }
+void rfrom(void) { push rack[(unsigned char)R--]; }
 
-void rat(void)
-{   push rack[(unsigned char)R];  }
+void rat(void) { push rack[(unsigned char)R]; }
 
-void tor(void)
-{   rack[(unsigned char)++R] = top;  pop;  }
+void tor(void) {
+  rack[(unsigned char)++R] = top;
+  pop;
+}
 
 void spat(void) {}
 void spsto(void) {}
 
-void drop(void)
-{   pop;  }
+void drop(void) { pop; }
 
-void dup(void)
-{   stack[(unsigned char)++S] = top;  }
+void dup(void) { stack[(unsigned char)++S] = top; }
 
-void swap(void)
-{   WP = top;
+void swap(void) {
+  WP = top;
   top = stack[(unsigned char)S];
-  stack[(unsigned char)S] = WP;  }
+  stack[(unsigned char)S] = WP;
+}
 
-void over(void)
-{  push stack[(unsigned char)(S-1)];  }
+void over(void) { push stack[(unsigned char)(S - 1)]; }
 
-void zless(void)
-{   top = (top < 0) LOGICAL;  }
+void zless(void) { top = (top < 0) LOGICAL; }
 
-void andd(void)
-{   top &= stack[(unsigned char)S--];  }
+void andd(void) { top &= stack[(unsigned char)S--]; }
 
-void orr(void)
-{   top |= stack[(unsigned char)S--];  }
+void orr(void) { top |= stack[(unsigned char)S--]; }
 
-void xorr(void)
-{   top ^= stack[(unsigned char)S--];  }
+void xorr(void) { top ^= stack[(unsigned char)S--]; }
 
-void uplus(void)
-{   stack[(unsigned char)S] += top;
-  top = LOWER(stack[(unsigned char)S], top);  }
+void uplus(void) {
+  stack[(unsigned char)S] += top;
+  top = LOWER(stack[(unsigned char)S], top);
+}
 
-void nop(void)
-{   next(); }
+void nop(void) { next(); }
 
-void qdup(void)
-{   if(top) stack[(unsigned char)++S] = top ;  }
+void qdup(void) {
+  if (top)
+    stack[(unsigned char)++S] = top;
+}
 
-void rot(void)
-{   WP = stack[(unsigned char)(S-1)];
-  stack[(unsigned char)(S-1)] = stack[(unsigned char)S];
+void rot(void) {
+  WP = stack[(unsigned char)(S - 1)];
+  stack[(unsigned char)(S - 1)] = stack[(unsigned char)S];
   stack[(unsigned char)S] = top;
-  top = WP;  }
+  top = WP;
+}
 
-void ddrop(void)
-{   drop(); drop();  }
+void ddrop(void) {
+  drop();
+  drop();
+}
 
-void ddup(void)
-{   over(); over();  }
+void ddup(void) {
+  over();
+  over();
+}
 
-void plus(void)
-{   top += stack[(unsigned char)S--];  }
+void plus(void) { top += stack[(unsigned char)S--]; }
+
+// ###bookmark
+// clang-format off
+
 
 void inver(void)
 {   top = -top-1;  }
