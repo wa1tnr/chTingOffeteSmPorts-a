@@ -713,7 +713,7 @@ void adc(void)
 
 void pin(void)
 {  WP=top; pop;
-   ledcAttachPin(top,WP);
+   // TODO FIXME ledcAttachPin(top,WP);
    pop;
 }
 
@@ -725,7 +725,7 @@ void duty(void)
 
 void freq(void)
 {  WP=top; pop;
-   ledcSetup(WP,top,13);
+   // TODO FIXME ledcSetup(WP,top,13);
    pop;
 }
 
@@ -897,8 +897,8 @@ void setup()
   Serial.println("Booting esp32Forth v6.2 ...");
  
 // Setup timer and attach timer to a led pin
-  ledcSetup(0, 100, LEDC_TIMER_13_BIT);
-  ledcAttachPin(5, 0);
+  // TODO FIXME ledcSetup(0, 100, LEDC_TIMER_13_BIT);
+  // TODO FIXME ledcAttachPin(5, 0);
   ledcAnalogWrite(0, 250, brightness);
   pinMode(2,OUTPUT);
   digitalWrite(2, HIGH);   // turn the LED2 on
