@@ -101,94 +101,99 @@ void HEADER(int lex, char seq[]) {
   Serial.print(IP, HEX);
 }
 
-// clang-format off
-
-int CODE(int len, ... ) {
-  int addr=IP;
+int CODE(int len, ...) {
+  int addr = IP;
   int s;
   va_list argList;
   va_start(argList, len);
-  for(; len;len--) {
-    s= va_arg(argList, int);
-    cData[IP++]=s;
+  for (; len; len--) {
+    s = va_arg(argList, int);
+    cData[IP++] = s;
     Serial.print(" ");
-    Serial.print(s,HEX);
+    Serial.print(s, HEX);
   }
   va_end(argList);
   return addr;
-  }
-int COLON(int len, ... ) {
-  int addr=IP;
-  P=IP>>2;
-  data[P++]=6; // dolist
+}
+int COLON(int len, ...) {
+  int addr = IP;
+  P = IP >> 2;
+  data[P++] = 6; // dolist
   va_list argList;
   va_start(argList, len);
   Serial.println();
-  Serial.print(addr,HEX);
+  Serial.print(addr, HEX);
   Serial.print(" ");
-  Serial.print(6,HEX);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
+  Serial.print(6, HEX);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
     Serial.print(" ");
-    Serial.print(j,HEX);
+    Serial.print(j, HEX);
   }
-  IP=P<<2;
+  IP = P << 2;
   va_end(argList);
   return addr;
-  }
-int LABEL(int len, ... ) {
-  int addr=IP;
-  P=IP>>2;
+}
+int LABEL(int len, ...) {
+  int addr = IP;
+  P = IP >> 2;
   va_list argList;
   va_start(argList, len);
   Serial.println();
-  Serial.print(addr,HEX);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
+  Serial.print(addr, HEX);
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
     Serial.print(" ");
-    Serial.print(j,HEX);
+    Serial.print(j, HEX);
   }
-  IP=P<<2;
+  IP = P << 2;
   va_end(argList);
   return addr;
-  }
-void BEGIN(int len, ... ) {
-  P=IP>>2;
+}
+void BEGIN(int len, ...) {
+  P = IP >> 2;
   Serial.println();
-  Serial.print(IP,HEX);
+  Serial.print(IP, HEX);
   Serial.print(" BEGIN ");
-  pushR=P;
+  pushR = P;
   va_list argList;
   va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
     Serial.print(" ");
-    Serial.print(j,HEX);
+    Serial.print(j, HEX);
   }
-  IP=P<<2;
+  IP = P << 2;
   va_end(argList);
 }
-void AGAIN(int len, ... ) {
-  P=IP>>2;
+void AGAIN(int len, ...) {
+  P = IP >> 2;
   Serial.println();
-  Serial.print(IP,HEX);
+  Serial.print(IP, HEX);
   Serial.print(" AGAIN ");
-  data[P++]=BRAN;
-  data[P++]=popR<<2;
+  data[P++] = BRAN;
+  data[P++] = popR << 2;
   va_list argList;
   va_start(argList, len);
-  for(; len;len--) {
-    int j=va_arg(argList, int);
-    data[P++]=j;
+  for (; len; len--) {
+    int j = va_arg(argList, int);
+    data[P++] = j;
     Serial.print(" ");
-    Serial.print(j,HEX);
+    Serial.print(j, HEX);
   }
-  IP=P<<2;
+  IP = P << 2;
   va_end(argList);
-  }
+}
+
+// ###bookmark
+// clang-format off
+
+
+
+
 void UNTIL(int len, ... ) {
   P=IP>>2;
   Serial.println();
