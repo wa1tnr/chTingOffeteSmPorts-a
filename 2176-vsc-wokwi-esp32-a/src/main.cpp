@@ -88,7 +88,7 @@ void timeToView() {
   delay(5100);
 }
 
-void HEADER(int lex, char seq[]) {
+void wHEADER(int lex, char seq[]) {
   P = IP >> 2;
   int i;
   int len = lex & 31;
@@ -114,6 +114,10 @@ void HEADER(int lex, char seq[]) {
   Serial.print(IP, HEX);
 }
 
+#define HEADER(aaaaa,bbbbb) \
+  snprintf(buffer, sizeof(buffer), "%s", bbbbb); \
+  wHEADER(aaaaa, bufPtr);
+
 int CODE(int len, ...) {
   int addr = IP;
   int s;
@@ -128,6 +132,8 @@ int CODE(int len, ...) {
   va_end(argList);
   return addr;
 }
+
+
 int COLON(int len, ...) {
   int addr = IP;
   P = IP >> 2;
@@ -360,13 +366,13 @@ void NEXT(int len, ...) {
 }
 void AFT(int len, ...) {
   P = IP >> 2;
-  int k;
+  // ORIG had:  int k;
   Serial.println();
   Serial.print(IP, HEX);
   Serial.print(" AFT ");
   data[P++] = BRAN;
   data[P++] = 0;
-  k = popR;
+  // ORIG had: k = popR;
   pushR = P;
   pushR = P - 1;
   va_list argList;
@@ -380,7 +386,8 @@ void AFT(int len, ...) {
   IP = P << 2;
   va_end(argList);
 }
-void DOTQ(char seq[]) {
+
+void wDOTQ(char seq[]) {
   P = IP >> 2;
   int i;
   int len = strlen(seq);
@@ -398,6 +405,11 @@ void DOTQ(char seq[]) {
   Serial.print(" ");
   Serial.print(seq);
 }
+
+#define DOTQ(bbbbb) \
+  snprintf(buffer, sizeof(buffer), "%s", bbbbb); \
+  wDOTQ(bufPtr);
+
 void STRQ(char seq[]) {
   P = IP >> 2;
   int i;
@@ -417,7 +429,7 @@ void STRQ(char seq[]) {
   Serial.print(seq);
 }
 
-void ABORQ(char seq[]) {
+void wABORQ(char seq[]) {
   P = IP >> 2;
   int i;
   int len = strlen(seq);
@@ -436,11 +448,15 @@ void ABORQ(char seq[]) {
   Serial.print(seq);
 }
 
+#define ABORQ(bbbbb) \
+  snprintf(buffer, sizeof(buffer), "%s", bbbbb); \
+  wABORQ(bufPtr);
+
 void CheckSum() {
   int i;
   char sum = 0;
   Serial.println();
-  Serial.printf("%4x ", IP);
+  Serial.printf("%4x ", (unsigned int) IP); // ORIG was: Serial.printf("%4x ", IP);
   for (i = 0; i < 32; i++) {
     sum += cData[IP];
     Serial.printf("%2x", cData[IP++]);
@@ -498,7 +514,7 @@ void qrx(void) {
 
 void txsto(void) {
   Serial.write((unsigned char)top);
-  char c = top;
+  // TODO FIXME why is this here aug 2025  char c = top;
   pop;
 }
 
@@ -975,6 +991,8 @@ void setup() {
   R = 0;
   top = 0;
   cData = (uint8_t *)data;
+  char buffer[32];
+  char* bufPtr = buffer;
   Serial.begin(115200);
   delay(100);
   Serial.println("Booting esp32Forth v6.2 ...");
@@ -982,7 +1000,6 @@ void setup() {
   timeToView();
   // TODO FIXME  Serial.end() is likely wildly inappropriate to use here as a suppresion
   Serial.end();
-
   // Setup timer and attach timer to a led pin
   // TODO FIXME ledcSetup(0, 100, LEDC_TIMER_13_BIT);
   // TODO FIXME ledcAttachPin(5, 0);
@@ -997,6 +1014,12 @@ void setup() {
   digitalWrite(18, LOW); // motor2 forward
   pinMode(19, OUTPUT);
   digitalWrite(19, LOW); // motor2 bacward
+
+
+
+
+
+
 
   IP = 512;
   R = 0;
@@ -1025,12 +1048,11 @@ void setup() {
   HEADER(3, "tmp");
   int TEMP = CODE(8, as_docon, as_next, 0, 0, 0XBC, 1, 0, 0);
   HEADER(1, "Z");
-  int Z = CODE(8, as_docon, as_next, 0, 0, 0, 0, 0, 0);
+  CODE(8, as_docon, as_next, 0, 0, 0, 0, 0, 0); // int Z = CODE(8, as_docon, as_next, 0, 0, 0, 0, 0, 0);
   HEADER(4, "ppqn");
-  int PPQN = CODE(8, as_docon, as_next, 0, 0, 0XC0, 1, 0, 0);
+  CODE(8, as_docon, as_next, 0, 0, 0XC0, 1, 0, 0); // int PPQN = CODE(8, as_docon, as_next, 0, 0, 0XC0, 1, 0, 0);
   HEADER(7, "channel");
-  int CHANN = CODE(8, as_docon, as_next, 0, 0, 0XC4, 1, 0, 0);
-
+  CODE(8, as_docon, as_next, 0, 0, 0XC4, 1, 0, 0); // int CHANN = CODE(8, as_docon, as_next, 0, 0, 0XC4, 1, 0, 0);
   HEADER(3, "NOP");
   int NOP = CODE(4, as_nop, as_next, 0, 0);
   HEADER(6, "ACCEPT");
@@ -1042,7 +1064,7 @@ void setup() {
   HEADER(5, "DOLIT");
   int DOLIT = CODE(4, as_dolit, as_next, 0, 0);
   HEADER(6, "DOLIST");
-  int DOLST = CODE(4, as_dolist, as_next, 0, 0);
+  CODE(4, as_dolist, as_next, 0, 0); // int DOLST = CODE(4, as_dolist, as_next, 0, 0);
   HEADER(4, "EXIT");
   int EXITT = CODE(4, as_exit, as_next, 0, 0);
   HEADER(7, "EXECUTE");
@@ -1084,11 +1106,11 @@ void setup() {
   HEADER(3, "XOR");
   int XORR = CODE(4, as_xorr, as_next, 0, 0);
   HEADER(3, "UM+");
-  int UPLUS = CODE(4, as_uplus, as_next, 0, 0);
+  CODE(4, as_uplus, as_next, 0, 0); // int UPLUS = CODE(4, as_uplus, as_next, 0, 0);
   HEADER(4, "?DUP");
   int QDUP = CODE(4, as_qdup, as_next, 0, 0);
   HEADER(3, "ROT");
-  int ROT = CODE(4, as_rot, as_next, 0, 0);
+  CODE(4, as_rot, as_next, 0, 0); // int ROT = CODE(4, as_rot, as_next, 0, 0);
   HEADER(5, "2DROP");
   int DDROP = CODE(4, as_ddrop, as_next, 0, 0);
   HEADER(4, "2DUP");
@@ -1100,7 +1122,7 @@ void setup() {
   HEADER(6, "NEGATE");
   int NEGAT = CODE(4, as_negat, as_next, 0, 0);
   HEADER(7, "DNEGATE");
-  int DNEGA = CODE(4, as_dnega, as_next, 0, 0);
+  CODE(4, as_dnega, as_next, 0, 0); // int DNEGA = CODE(4, as_dnega, as_next, 0, 0);
   HEADER(1, "-");
   int SUBBB = CODE(4, as_subb, as_next, 0, 0);
   HEADER(3, "ABS");
@@ -1116,30 +1138,30 @@ void setup() {
   HEADER(5, "M/MOD");
   int MSMOD = CODE(4, as_msmod, as_next, 0, 0);
   HEADER(4, "/MOD");
-  int SLMOD = CODE(4, as_slmod, as_next, 0, 0);
+  CODE(4, as_slmod, as_next, 0, 0); // int SLMOD = CODE(4, as_slmod, as_next, 0, 0);
   HEADER(3, "MOD");
-  int MODD = CODE(4, as_mod, as_next, 0, 0);
+  CODE(4, as_mod, as_next, 0, 0); // int MODD = CODE(4, as_mod, as_next, 0, 0);
   HEADER(1, "/");
   int SLASH = CODE(4, as_slash, as_next, 0, 0);
   HEADER(3, "UM*");
-  int UMSTA = CODE(4, as_umsta, as_next, 0, 0);
+  CODE(4, as_umsta, as_next, 0, 0); // int UMSTA = CODE(4, as_umsta, as_next, 0, 0);
   HEADER(1, "*");
   int STAR = CODE(4, as_star, as_next, 0, 0);
   HEADER(2, "M*");
-  int MSTAR = CODE(4, as_mstar, as_next, 0, 0);
+  CODE(4, as_mstar, as_next, 0, 0); // int MSTAR = CODE(4, as_mstar, as_next, 0, 0);
   HEADER(5, "*/MOD");
-  int SSMOD = CODE(4, as_ssmod, as_next, 0, 0);
+  CODE(4, as_ssmod, as_next, 0, 0); // int SSMOD = CODE(4, as_ssmod, as_next, 0, 0);
   HEADER(2, "*/");
-  int STASL = CODE(4, as_stasl, as_next, 0, 0);
+  CODE(4, as_stasl, as_next, 0, 0); // int STASL = CODE(4, as_stasl, as_next, 0, 0);
 
   HEADER(4, "PICK");
-  int PICK = CODE(4, as_pick, as_next, 0, 0);
+  CODE(4, as_pick, as_next, 0, 0); // int PICK = CODE(4, as_pick, as_next, 0, 0);
   HEADER(2, "+!");
   int PSTOR = CODE(4, as_pstor, as_next, 0, 0);
   HEADER(2, "2!");
-  int DSTOR = CODE(4, as_dstor, as_next, 0, 0);
+  CODE(4, as_dstor, as_next, 0, 0); // int DSTOR = CODE(4, as_dstor, as_next, 0, 0);
   HEADER(2, "2@");
-  int DAT = CODE(4, as_dat, as_next, 0, 0);
+  CODE(4, as_dat, as_next, 0, 0); // int DAT = CODE(4, as_dat, as_next, 0, 0);
   HEADER(5, "COUNT");
   int COUNT = CODE(4, as_count, as_next, 0, 0);
   HEADER(3, "MAX");
@@ -1149,7 +1171,7 @@ void setup() {
   HEADER(2, "BL");
   int BLANK = CODE(8, as_docon, as_next, 0, 0, 32, 0, 0, 0);
   HEADER(4, "CELL");
-  int CELL = CODE(8, as_docon, as_next, 0, 0, 4, 0, 0, 0);
+  CODE(8, as_docon, as_next, 0, 0, 4, 0, 0, 0); // int CELL = CODE(8, as_docon, as_next, 0, 0, 4, 0, 0, 0);
   HEADER(5, "CELL+");
   int CELLP = CODE(8, as_docon, as_plus, as_next, 0, 4, 0, 0, 0);
   HEADER(5, "CELL-");
@@ -1163,32 +1185,33 @@ void setup() {
   HEADER(2, "1-");
   int ONEM = CODE(8, as_docon, as_subb, as_next, 0, 1, 0, 0, 0);
   HEADER(2, "2+");
-  int TWOP = CODE(8, as_docon, as_plus, as_next, 0, 2, 0, 0, 0);
+  CODE(8, as_docon, as_plus, as_next, 0, 2, 0, 0, 0); // int TWOP = CODE(8, as_docon, as_plus, as_next, 0, 2, 0, 0, 0);
   HEADER(2, "2-");
-  int TWOM = CODE(8, as_docon, as_subb, as_next, 0, 2, 0, 0, 0);
+  CODE(8, as_docon, as_subb, as_next, 0, 2, 0, 0, 0); // int TWOM = CODE(8, as_docon, as_subb, as_next, 0, 2, 0, 0, 0);
   HEADER(2, "2*");
-  int TWOST = CODE(8, as_docon, as_star, as_next, 0, 2, 0, 0, 0);
+  CODE(8, as_docon, as_star, as_next, 0, 2, 0, 0, 0); // int TWOST = CODE(8, as_docon, as_star, as_next, 0, 2, 0, 0, 0);
   HEADER(2, "2/");
-  int TWOS = CODE(8, as_docon, as_slash, as_next, 0, 2, 0, 0, 0);
-  HEADER(10, "sendPacket");
-  int SENDP = CODE(4, as_sendPacket, as_next, 0, 0);
+  CODE(8, as_docon, as_slash, as_next, 0, 2, 0, 0, 0); // int TWOS = CODE(8, as_docon, as_slash, as_next, 0, 2, 0, 0, 0);
+  HEADER(10, "sendPacket"); // ###bookmark removed int FOO =   from many  by 1537z Fri 29
+  CODE(4, as_sendPacket, as_next, 0, 0); // int SENDP = CODE(4, as_sendPacket, as_next, 0, 0);
   HEADER(4, "POKE");
   int POKE = CODE(4, as_poke, as_next, 0, 0);
   HEADER(4, "PEEK");
   int PEEK = CODE(4, as_peek, as_next, 0, 0);
   HEADER(3, "ADC");
-  int ADC = CODE(4, as_adc, as_next, 0, 0);
+  CODE(4, as_adc, as_next, 0, 0); // int ADC = CODE(4, as_adc, as_next, 0, 0);
   HEADER(3, "PIN");
-  int PIN = CODE(4, as_pin, as_next, 0, 0);
+  CODE(4, as_pin, as_next, 0, 0); // int PIN = CODE(4, as_pin, as_next, 0, 0);
   HEADER(4, "TONE");
-  int TONE = CODE(4, as_tone, as_next, 0, 0);
+  CODE(4, as_tone, as_next, 0, 0); // int TONE = CODE(4, as_tone, as_next, 0, 0);
   HEADER(4, "DUTY");
-  int DUTY = CODE(4, as_duty, as_next, 0, 0);
+  CODE(4, as_duty, as_next, 0, 0); // int DUTY = CODE(4, as_duty, as_next, 0, 0);
   HEADER(4, "FREQ");
-  int FREQ = CODE(4, as_freq, as_next, 0, 0);
+  CODE(4, as_freq, as_next, 0, 0); // int FREQ = CODE(4, as_freq, as_next, 0, 0);
 
   HEADER(3, "KEY");
-  int KEY = COLON(0);
+  COLON(0); // int KEY = COLON(0);
+
   BEGIN(1, QKEY);
   UNTIL(1, EXITT);
   HEADER(6, "WITHIN");
@@ -1216,13 +1239,16 @@ void setup() {
   THEN(0);
   NEXT(2, DDROP, EXITT);
   HEADER(4, "MOVE");
-  int MOVE = COLON(1, CELLD);
+
+  COLON(1, CELLD); // int MOVE = COLON(1, CELLD);
+
   FOR(0);
   AFT(8, OVER, AT, OVER, STORE, TOR, CELLP, RFROM, CELLP);
   THEN(0);
   NEXT(2, DDROP, EXITT);
   HEADER(4, "FILL");
-  int FILL = COLON(1, SWAP);
+  COLON(1, SWAP); // int FILL = COLON(1, SWAP);
+
   FOR(1, SWAP);
   AFT(3, DDUP, CSTOR, ONEP);
   THEN(0);
@@ -1254,7 +1280,7 @@ void setup() {
   HEADER(3, "HEX");
   int HEXX = COLON(5, DOLIT, 16, BASE, STORE, EXITT);
   HEADER(7, "DECIMAL");
-  int DECIM = COLON(5, DOLIT, 10, BASE, STORE, EXITT);
+  COLON(5, DOLIT, 10, BASE, STORE, EXITT); // int DECIM = COLON(5, DOLIT, 10, BASE, STORE, EXITT);
   HEADER(6, "wupper");
   int UPPER = COLON(4, DOLIT, 0x5F5F5F5F, ANDD, EXITT);
   HEADER(6, ">upper");
@@ -1306,7 +1332,14 @@ void setup() {
   HEADER(3, ".\"|");
   DOTQP = COLON(4, DOSTR, COUNT, TYPES, EXITT);
   HEADER(2, ".R");
-  int DOTR = COLON(8, TOR, STRR, RFROM, OVER, SUBBB, SPACS, TYPES, EXITT);
+  COLON(8, TOR, STRR, RFROM, OVER, SUBBB, SPACS, TYPES, EXITT); // int DOTR = COLON(8, TOR, STRR, RFROM, OVER, SUBBB, SPACS, TYPES, EXITT);
+
+
+
+
+
+
+
   HEADER(3, "U.R");
   int UDOTR =
     COLON(10, TOR, BDIGS, DIGS, EDIGS, RFROM, OVER, SUBBB, SPACS, TYPES, EXITT);
@@ -1317,7 +1350,7 @@ void setup() {
   IF(3, UDOT, EXITT);
   THEN(4, STRR, SPACE, TYPES, EXITT);
   HEADER(1, "?");
-  int QUEST = COLON(3, AT, DOT, EXITT);
+  COLON(3, AT, DOT, EXITT); // int QUEST = COLON(3, AT, DOT, EXITT);
   HEADER(7, "(parse)");
   int PARS = COLON(5, TEMP, CSTOR, OVER, TOR, DUPP);
   IF(5, ONEM, TEMP, CAT, BLANK, EQUAL);
@@ -1373,7 +1406,7 @@ void setup() {
 
   int NAMEQ = COLON(3, CNTXT, FIND, EXITT);
   HEADER(6, "EXPECT");
-  int EXPEC = COLON(5, ACCEP, SPAN, STORE, DROP, EXITT);
+  COLON(5, ACCEP, SPAN, STORE, DROP, EXITT); // int EXPEC = COLON(5, ACCEP, SPAN, STORE, DROP, EXITT);
   HEADER(5, "QUERY");
   int QUERY = COLON(12, TIB, DOLIT, 0X100, ACCEP, NTIB, STORE, DROP, DOLIT, 0,
                     INN, STORE, EXITT);
@@ -1388,8 +1421,12 @@ void setup() {
   HEADER(10, "$INTERPRET");
   int INTER = COLON(2, NAMEQ, QDUP);
   IF(4, CAT, DOLIT, COMPO, ANDD);
+
+  // snprintf(buffer, sizeof(buffer), "%s", " compile only");
+  // ABORQ(bufPtr);
   ABORQ(" compile only");
-  int INTER0 = LABEL(2, EXECU, EXITT);
+
+  LABEL(2, EXECU, EXITT); // int INTER0 = LABEL(2, EXECU, EXITT);
   THEN(1, NUMBQ);
   IF(1, EXITT);
   THEN(1, ERRORR);
@@ -1407,18 +1444,18 @@ void setup() {
   WHILE(2, TEVAL, ATEXE);
   REPEAT(4, DROP, DOTOK, NOP, EXITT);
   HEADER(4, "QUIT");
-  int QUITT = COLON(1, LBRAC);
+  COLON(1, LBRAC); // int QUITT = COLON(1, LBRAC);
   BEGIN(2, QUERY, EVAL);
   AGAIN(0);
   HEADER(4, "LOAD");
-  int LOAD =
-    COLON(10, NTIB, STORE, TTIB, STORE, DOLIT, 0, INN, STORE, EVAL, EXITT);
+  COLON(10, NTIB, STORE, TTIB, STORE, DOLIT, 0, INN, STORE, EVAL, EXITT); // int LOAD = COLON(10, NTIB, STORE, TTIB, STORE, DOLIT, 0, INN, STORE, EVAL, EXITT);
+
   HEADER(1, ",");
   int COMMA = COLON(7, HERE, DUPP, CELLP, CP, STORE, STORE, EXITT);
   HEADER(IMEDD + 7, "LITERAL");
   int LITER = COLON(5, DOLIT, DOLIT, COMMA, COMMA, EXITT);
   HEADER(5, "ALLOT");
-  int ALLOT = COLON(4, ALIGN, CP, PSTOR, EXITT);
+  COLON(4, ALIGN, CP, PSTOR, EXITT); // int ALLOT = COLON(4, ALIGN, CP, PSTOR, EXITT);
   HEADER(3, "$,\"");
   int STRCQ =
     COLON(9, DOLIT, 0X22, WORDD, COUNT, PLUS, ALIGN, CP, STORE, EXITT);
@@ -1437,7 +1474,7 @@ void setup() {
   IF(1, EXITT);
   THEN(1, ERRORR);
   HEADER(IMEDD + 9, "[COMPILE]");
-  int BCOMP = COLON(3, TICK, COMMA, EXITT);
+  COLON(3, TICK, COMMA, EXITT); // int BCOMP = COLON(3, TICK, COMMA, EXITT);
   HEADER(7, "COMPILE");
   int COMPI = COLON(7, RFROM, DUPP, AT, COMMA, CELLP, TOR, EXITT);
   HEADER(8, "$COMPILE");
@@ -1454,9 +1491,9 @@ void setup() {
   HEADER(1, "]");
   int RBRAC = COLON(5, DOLIT, SCOMP, TEVAL, STORE, EXITT);
   HEADER(1, ":");
-  int COLN = COLON(7, TOKEN, SNAME, RBRAC, DOLIT, 0x6, COMMA, EXITT);
+  COLON(7, TOKEN, SNAME, RBRAC, DOLIT, 0x6, COMMA, EXITT); // int COLN = COLON(7, TOKEN, SNAME, RBRAC, DOLIT, 0x6, COMMA, EXITT);
   HEADER(IMEDD + 1, ";");
-  int SEMIS = COLON(6, DOLIT, EXITT, COMMA, LBRAC, OVERT, EXITT);
+  COLON(6, DOLIT, EXITT, COMMA, LBRAC, OVERT, EXITT); // int SEMIS = COLON(6, DOLIT, EXITT, COMMA, LBRAC, OVERT, EXITT);
   HEADER(3, "dm+");
   int DMP = COLON(4, OVER, DOLIT, 6, UDOTR);
   FOR(0);
@@ -1464,14 +1501,14 @@ void setup() {
   THEN(0);
   NEXT(1, EXITT);
   HEADER(4, "DUMP");
-  int DUMP =
-    COLON(10, BASE, AT, TOR, HEXX, DOLIT, 0x1F, PLUS, DOLIT, 0x20, SLASH);
+  COLON(10, BASE, AT, TOR, HEXX, DOLIT, 0x1F, PLUS, DOLIT, 0x20, SLASH); // int DUMP = COLON(10, BASE, AT, TOR, HEXX, DOLIT, 0x1F, PLUS, DOLIT, 0x20, SLASH);
+
   FOR(0);
   AFT(10, CR, DOLIT, 8, DDUP, DMP, TOR, SPACE, CELLS, TYPES, RFROM);
   THEN(0);
   NEXT(5, DROP, RFROM, BASE, STORE, EXITT);
   HEADER(5, ">NAME");
-  int TNAME = COLON(1, CNTXT);
+  COLON(1, CNTXT); // int TNAME = COLON(1, CNTXT);
   BEGIN(2, AT, DUPP);
   WHILE(3, DDUP, NAMET, XORR);
   IF(1, ONEM);
@@ -1481,7 +1518,7 @@ void setup() {
   HEADER(3, ".ID");
   int DOTID = COLON(7, COUNT, DOLIT, 0x1F, ANDD, TYPES, SPACE, EXITT);
   HEADER(5, "WORDS");
-  int WORDS = COLON(6, CR, CNTXT, DOLIT, 0, TEMP, STORE);
+  COLON(6, CR, CNTXT, DOLIT, 0, TEMP, STORE); // int WORDS = COLON(6, CR, CNTXT, DOLIT, 0, TEMP, STORE);
   BEGIN(2, AT, QDUP);
   WHILE(9, DUPP, SPACE, DOTID, CELLM, TEMP, AT, DOLIT, 0x10, LESS);
   IF(4, DOLIT, 1, TEMP, PSTOR);
@@ -1489,14 +1526,14 @@ void setup() {
   THEN(0);
   REPEAT(1, EXITT);
   HEADER(6, "FORGET");
-  int FORGT = COLON(3, TOKEN, NAMEQ, QDUP);
+  COLON(3, TOKEN, NAMEQ, QDUP); // int FORGT = COLON(3, TOKEN, NAMEQ, QDUP);
   IF(12, CELLM, DUPP, CP, STORE, AT, DUPP, CNTXT, STORE, LAST, STORE, DROP,
      EXITT);
   THEN(1, ERRORR);
   HEADER(4, "COLD");
-  int COLD = COLON(1, CR);
+  COLON(1, CR); // int COLD = COLON(1, CR);
   DOTQ("esp32forth V5.4, 2019 ");
-  int DOTQ1 = LABEL(2, CR, EXITT);
+  LABEL(2, CR, EXITT); // int DOTQ1 = LABEL(2, CR, EXITT);
   HEADER(4, "LINE");
   int LINE = COLON(2, DOLIT, 0x7);
   FOR(6, DUPP, PEEK, DOLIT, 0x9, UDOTR, CELLP);
@@ -1508,35 +1545,45 @@ void setup() {
   THEN(0);
   NEXT(1, EXITT);
   HEADER(2, "P0");
-  int P0 = COLON(4, DOLIT, 0x3FF44004, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44004, POKE, EXITT); // int P0 = COLON(4, DOLIT, 0x3FF44004, POKE, EXITT);
+
+
+
+
+
+
+
+
+
+
   HEADER(3, "P0S");
-  int P0S = COLON(4, DOLIT, 0x3FF44008, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44008, POKE, EXITT); // int P0S = COLON(4, DOLIT, 0x3FF44008, POKE, EXITT);
   HEADER(3, "P0C");
-  int P0C = COLON(4, DOLIT, 0x3FF4400C, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF4400C, POKE, EXITT); // int P0C = COLON(4, DOLIT, 0x3FF4400C, POKE, EXITT);
   HEADER(2, "P1");
-  int P1 = COLON(4, DOLIT, 0x3FF44010, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44010, POKE, EXITT); // int P1 = COLON(4, DOLIT, 0x3FF44010, POKE, EXITT);
   HEADER(3, "P1S");
-  int P1S = COLON(4, DOLIT, 0x3FF44014, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44014, POKE, EXITT); // int P1S = COLON(4, DOLIT, 0x3FF44014, POKE, EXITT);
   HEADER(3, "P1C");
-  int P1C = COLON(4, DOLIT, 0x3FF44018, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44018, POKE, EXITT); // int P1C = COLON(4, DOLIT, 0x3FF44018, POKE, EXITT);
   HEADER(4, "P0EN");
-  int P0EN = COLON(4, DOLIT, 0x3FF44020, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44020, POKE, EXITT); // int P0EN = COLON(4, DOLIT, 0x3FF44020, POKE, EXITT);
   HEADER(5, "P0ENS");
-  int P0ENS = COLON(4, DOLIT, 0x3FF44024, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44024, POKE, EXITT); // int P0ENS = COLON(4, DOLIT, 0x3FF44024, POKE, EXITT);
   HEADER(5, "P0ENC");
-  int P0ENC = COLON(4, DOLIT, 0x3FF44028, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44028, POKE, EXITT); // int P0ENC = COLON(4, DOLIT, 0x3FF44028, POKE, EXITT);
   HEADER(4, "P1EN");
-  int P1EN = COLON(4, DOLIT, 0x3FF4402C, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF4402C, POKE, EXITT); // int P1EN = COLON(4, DOLIT, 0x3FF4402C, POKE, EXITT);
   HEADER(5, "P1ENS");
-  int P1ENS = COLON(4, DOLIT, 0x3FF44030, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44030, POKE, EXITT); // int P1ENS = COLON(4, DOLIT, 0x3FF44030, POKE, EXITT);
   HEADER(5, "P1ENC");
-  int P1ENC = COLON(4, DOLIT, 0x3FF44034, POKE, EXITT);
+  COLON(4, DOLIT, 0x3FF44034, POKE, EXITT); // int P1ENC = COLON(4, DOLIT, 0x3FF44034, POKE, EXITT);
   HEADER(4, "P0IN");
-  int P0IN = COLON(5, DOLIT, 0x3FF4403C, PEEK, DOT, EXITT);
+  COLON(5, DOLIT, 0x3FF4403C, PEEK, DOT, EXITT); // int P0IN = COLON(5, DOLIT, 0x3FF4403C, PEEK, DOT, EXITT);
   HEADER(4, "P1IN");
-  int P1IN = COLON(5, DOLIT, 0x3FF44040, PEEK, DOT, EXITT);
+  COLON(5, DOLIT, 0x3FF44040, PEEK, DOT, EXITT); // int P1IN = COLON(5, DOLIT, 0x3FF44040, PEEK, DOT, EXITT);
   HEADER(3, "PPP");
-  int PPP = COLON(7, DOLIT, 0x3FF44000, DOLIT, 3, PP, DROP, EXITT);
+  COLON(7, DOLIT, 0x3FF44000, DOLIT, 3, PP, DROP, EXITT); // int PPP = COLON(7, DOLIT, 0x3FF44000, DOLIT, 3, PP, DROP, EXITT);
   HEADER(5, "EMITT");
   int EMITT = COLON(2, DOLIT, 0x3);
   FOR(8, DOLIT, 0, DOLIT, 0x100, MSMOD, SWAP, TCHAR, EMIT);
@@ -1547,23 +1594,23 @@ void setup() {
   NEXT(2, DROP, EXITT);
   HEADER(4, "PPPP");
 
-  int PPPP = COLON(0);
+  COLON(0); // int PPPP = COLON(0);
   FOR(0);
   AFT(10, CR, DUPP, DUPP, DOLIT, 0x9, UDOTR, SPACE, LINE, SWAP, TYPEE);
   THEN(0);
   NEXT(1, EXITT);
   HEADER(3, "KKK");
-  int KKK = COLON(7, DOLIT, 0x3FF59000, DOLIT, 0x10, PP, DROP, EXITT);
+  COLON(7, DOLIT, 0x3FF59000, DOLIT, 0x10, PP, DROP, EXITT); // int KKK = COLON(7, DOLIT, 0x3FF59000, DOLIT, 0x10, PP, DROP, EXITT);
   HEADER(IMEDD + 4, "THEN");
   int THENN = COLON(4, HERE, SWAP, STORE, EXITT);
   HEADER(IMEDD + 3, "FOR");
-  int FORR = COLON(4, COMPI, TOR, HERE, EXITT);
+  COLON(4, COMPI, TOR, HERE, EXITT); // int FORR = COLON(4, COMPI, TOR, HERE, EXITT);
   HEADER(IMEDD + 5, "BEGIN");
-  int BEGIN = COLON(2, HERE, EXITT);
+  COLON(2, HERE, EXITT); // int BEGIN = COLON(2, HERE, EXITT);
   HEADER(IMEDD + 4, "NEXT");
-  int NEXT = COLON(4, COMPI, DONXT, COMMA, EXITT);
+  COLON(4, COMPI, DONXT, COMMA, EXITT); // int NEXT = COLON(4, COMPI, DONXT, COMMA, EXITT);
   HEADER(IMEDD + 5, "UNTIL");
-  int UNTIL = COLON(4, COMPI, QBRAN, COMMA, EXITT);
+  COLON(4, COMPI, QBRAN, COMMA, EXITT); // int UNTIL = COLON(4, COMPI, QBRAN, COMMA, EXITT);
   HEADER(IMEDD + 5, "AGAIN");
   int AGAIN = COLON(4, COMPI, BRAN, COMMA, EXITT);
   HEADER(IMEDD + 2, "IF");
@@ -1571,35 +1618,61 @@ void setup() {
   HEADER(IMEDD + 5, "AHEAD");
   int AHEAD = COLON(7, COMPI, BRAN, HERE, DOLIT, 0, COMMA, EXITT);
   HEADER(IMEDD + 6, "REPEAT");
-  int REPEA = COLON(3, AGAIN, THENN, EXITT);
+  COLON(3, AGAIN, THENN, EXITT); // int REPEA = COLON(3, AGAIN, THENN, EXITT);
   HEADER(IMEDD + 3, "AFT");
-  int AFT = COLON(5, DROP, AHEAD, HERE, SWAP, EXITT);
+  COLON(5, DROP, AHEAD, HERE, SWAP, EXITT); // int AFT = COLON(5, DROP, AHEAD, HERE, SWAP, EXITT);
   HEADER(IMEDD + 4, "ELSE");
-  int ELSEE = COLON(4, AHEAD, SWAP, THENN, EXITT);
+  COLON(4, AHEAD, SWAP, THENN, EXITT); // int ELSEE = COLON(4, AHEAD, SWAP, THENN, EXITT);
   HEADER(IMEDD + 5, "WHILE");
-  int WHILEE = COLON(3, IFF, SWAP, EXITT);
+  COLON(3, IFF, SWAP, EXITT); // int WHILEE = COLON(3, IFF, SWAP, EXITT);
   HEADER(IMEDD + 6, "ABORT\"");
-  int ABRTQ = COLON(6, DOLIT, ABORQP, HERE, STORE, STRCQ, EXITT);
+  COLON(6, DOLIT, ABORQP, HERE, STORE, STRCQ, EXITT); // int ABRTQ = COLON(6, DOLIT, ABORQP, HERE, STORE, STRCQ, EXITT);
   HEADER(IMEDD + 2, "$\"");
-  int STRQ = COLON(6, DOLIT, STRQP, HERE, STORE, STRCQ, EXITT);
+  COLON(6, DOLIT, STRQP, HERE, STORE, STRCQ, EXITT); // int STRQ = COLON(6, DOLIT, STRQP, HERE, STORE, STRCQ, EXITT);
   HEADER(IMEDD + 2, ".\"");
-  int DOTQQ = COLON(6, DOLIT, DOTQP, HERE, STORE, STRCQ, EXITT);
+  COLON(6, DOLIT, DOTQP, HERE, STORE, STRCQ, EXITT); // int DOTQQ = COLON(6, DOLIT, DOTQP, HERE, STORE, STRCQ, EXITT);
   HEADER(4, "CODE");
   int CODE = COLON(5, TOKEN, SNAME, OVERT, ALIGN, EXITT);
   HEADER(6, "CREATE");
   int CREAT = COLON(5, CODE, DOLIT, 0x203D, COMMA, EXITT);
   HEADER(8, "VARIABLE");
-  int VARIA = COLON(5, CREAT, DOLIT, 0, COMMA, EXITT);
+  COLON(5, CREAT, DOLIT, 0, COMMA, EXITT); // int VARIA = COLON(5, CREAT, DOLIT, 0, COMMA, EXITT);
   HEADER(8, "CONSTANT");
-  int CONST = COLON(6, CODE, DOLIT, 0x2004, COMMA, COMMA, EXITT);
+  COLON(6, CODE, DOLIT, 0x2004, COMMA, COMMA, EXITT); // int CONST = COLON(6, CODE, DOLIT, 0x2004, COMMA, COMMA, EXITT);
   HEADER(IMEDD + 2, ".(");
-  int DOTPR = COLON(5, DOLIT, 0X29, PARSE, TYPES, EXITT);
+  COLON(5, DOLIT, 0X29, PARSE, TYPES, EXITT); // int DOTPR = COLON(5, DOLIT, 0X29, PARSE, TYPES, EXITT);
   HEADER(IMEDD + 1, "\\");
-  int BKSLA = COLON(5, DOLIT, 0xA, WORDD, DROP, EXITT);
+  COLON(5, DOLIT, 0xA, WORDD, DROP, EXITT); // int BKSLA = COLON(5, DOLIT, 0xA, WORDD, DROP, EXITT);
+
+#if 0
+ 1632 STRQ    1634 DOTQQ   1640 VARIA  1642 CONST   1644 DOTPR   1646 BKSLA
+ 1648 PAREN   1650 ONLY    1673 USER
+
+NEW for 15:56z Fri 29 Aug:
+
+ 1561 P0S     1563 P0C     1565 P1     1567 P1S     1569 P1C     1571 P0EN
+ 1573 P0ENS   1575 P0ENC   1577 P1EN   1579 P1ENS   1581 P1ENC   1583 P0IN
+ 1585 P1IN    1587 PPP     1604 KKK    1608 FORR    1610 BEGIN   1612 NEXT
+ 1614 UNTIL   1622 REPEA   1624 AFT    1626 ELSEE   1628 WHILEE  1630 ABRTQ
+
+enId,
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
   HEADER(IMEDD + 1, "(");
-  int PAREN = COLON(5, DOLIT, 0X29, PARSE, DDROP, EXITT);
+  COLON(5, DOLIT, 0X29, PARSE, DDROP, EXITT); // int PAREN = COLON(5, DOLIT, 0X29, PARSE, DDROP, EXITT);
   HEADER(12, "COMPILE-ONLY");
-  int ONLY = COLON(6, DOLIT, 0x40, LAST, AT, PSTOR, EXITT);
+  COLON(6, DOLIT, 0x40, LAST, AT, PSTOR, EXITT); // int ONLY = COLON(6, DOLIT, 0x40, LAST, AT, PSTOR, EXITT);
   HEADER(9, "IMMEDIATE");
   int IMMED = COLON(6, DOLIT, 0x80, LAST, AT, PSTOR, EXITT);
   int ENDD = IP;
@@ -1622,8 +1695,7 @@ void setup() {
   Serial.print(" R-stack= ");
   Serial.print(popR << 2, HEX);
   IP = 0x180;
-  int USER = LABEL(16, 6, EVAL, 0, 0, 0, 0, 0, 0, 0, 0x10, IMMED - 12, ENDD,
-                   IMMED - 12, INTER, EVAL, 0);
+  LABEL(16, 6, EVAL, 0, 0, 0, 0, 0, 0, 0, 0x10, IMMED - 12, ENDD, IMMED - 12, INTER, EVAL, 0); // int USER = LABEL(16, 6, EVAL, 0, 0, 0, 0, 0, 0, 0, 0x10, IMMED - 12, ENDD, IMMED - 12, INTER, EVAL, 0);
   // dump dictionary
   IP = 0;
   for (len = 0; len < 0x120; len++) {
